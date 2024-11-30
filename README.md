@@ -1,111 +1,107 @@
-# Disaster Recovery Queensland Website
+# DRQ Website
 
-A Next.js-based website for Disaster Recovery Queensland, featuring dynamic service pages, location-based content, and SEO optimization.
+## Making Updates to the Live Site
 
-## Features
+### Quick Update Process
 
-- Dynamic page generation for services and locations
-- SEO optimization with schema markup
-- Performance monitoring and optimization
-- Google Maps integration
-- Image optimization with Unsplash
-- PWA support
-- Local SEO features
-
-## Prerequisites
-
-- Node.js 18.x or later
-- npm 9.x or later
-- Git
-
-## Environment Variables
-
-Create a `.env.development` and `.env.production` file with the following variables:
-
-```env
-NEXT_PUBLIC_GA_ID=your_google_analytics_id
-NEXT_PUBLIC_GOOGLE_MAPS_KEY=your_google_maps_key
-NEXT_PUBLIC_UNSPLASH_ACCESS_KEY=your_unsplash_key
-NEXT_PUBLIC_SITE_URL=https://disasterrecoveryqld.au
-NEXT_PUBLIC_API_URL=https://disasterrecoveryqld.au/api
+1. Make your changes locally
+2. Run one command to deploy:
+```bash
+npm run update:deploy
 ```
 
-## Installation
+This will:
+- Pull latest changes
+- Install dependencies
+- Build the site
+- Deploy to production
 
-1. Clone the repository:
+### Step-by-Step Process
+
+1. **Get Latest Changes**
 ```bash
-git clone https://github.com/your-username/drq-website.git
-cd drq-website
+npm run update
 ```
 
-2. Install dependencies:
+2. **Make Your Changes**
+Edit the files you need to update.
+
+3. **Preview Changes Locally**
 ```bash
+npm run preview
+```
+Visit http://localhost:3005 to see your changes.
+
+4. **Deploy to Production**
+```bash
+npm run deploy
+```
+
+### Available Commands
+
+- `npm run dev` - Start development server
+- `npm run preview` - Build and preview locally
+- `npm run deploy` - Deploy to production (interactive)
+- `npm run deploy:staging` - Deploy to staging
+- `npm run deploy:prod` - Deploy to production (direct)
+- `npm run update` - Get latest changes and install dependencies
+- `npm run update:deploy` - Update and deploy in one step
+
+### Common Update Scenarios
+
+#### 1. Update Content
+1. Find the content file in `src/config/content.ts`
+2. Make your changes
+3. Run `npm run update:deploy`
+
+#### 2. Update Images
+1. Add new images to `public/images/`
+2. Update references in content files
+3. Run `npm run update:deploy`
+
+#### 3. Update Services
+1. Edit service files in `src/app/en-AU/services/`
+2. Update service content in `src/config/content.ts`
+3. Run `npm run update:deploy`
+
+### Deployment Environments
+
+- **Staging**: For testing changes
+  ```bash
+  npm run deploy:staging
+  ```
+
+- **Production**: For live site
+  ```bash
+  npm run deploy:prod
+  ```
+
+### Troubleshooting
+
+If you encounter issues:
+
+1. **Clean Install**
+```bash
+rm -rf node_modules .next
 npm install
 ```
 
-3. Run the development server:
+2. **Reset Local Changes**
 ```bash
-npm run dev
+git reset --hard
+git pull
+npm install
 ```
 
-4. Build for production:
-```bash
-npm run build
-```
-
-## Project Structure
-
-```
-src/
-├── app/                    # Next.js app directory
-│   ├── en-AU/             # Australian English routes
-│   │   ├── locations/     # Location pages
-│   │   └── services/      # Service pages
-│   ├── api/               # API routes
-│   └── layout.tsx         # Root layout
-├── components/            # React components
-├── config/               # Configuration files
-├── lib/                  # Utility functions
-└── types/               # TypeScript types
-```
-
-## SEO Features
-
-- Dynamic sitemap generation
-- robots.txt configuration
-- Schema.org markup
-- Meta tags optimization
-- Core Web Vitals monitoring
-- Location-based content
-
-## Performance Optimization
-
-- Image optimization
-- Font optimization
-- Code splitting
-- Performance monitoring
-- Lazy loading
-
-## Deployment
-
-1. Set up environment variables on your hosting platform
-2. Push to the repository
-3. Configure build settings:
+3. **Check Build Locally**
 ```bash
 npm run build
 ```
 
-## Contributing
+### Need Help?
 
-1. Create a feature branch
-2. Make your changes
-3. Run tests
-4. Submit a pull request
+1. Check the deployment logs in GitHub Actions
+2. Review the Vercel deployment dashboard
+3. Contact the development team for support
 
-## License
-
-Proprietary - All rights reserved
-
-## Support
-
-For support, contact the development team at support@example.com
+Remember to always preview changes locally before deploying to production.
