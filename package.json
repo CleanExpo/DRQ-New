@@ -16,7 +16,9 @@
     "backup": "node scripts/backup-content.js create",
     "backup:restore": "node scripts/backup-content.js restore",
     "content:update": "npm run backup && npm run dev",
-    "content:deploy": "npm run backup && npm run update:deploy"
+    "content:deploy": "npm run backup && npm run update:deploy",
+    "verify": "node scripts/verify-setup.js",
+    "setup": "npm install && npm run verify"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.0.2",
