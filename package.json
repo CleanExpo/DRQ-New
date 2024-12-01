@@ -16,11 +16,15 @@
     "preview": "npm run build && npm run start",
     "backup": "node scripts/backup-content.js create",
     "backup:restore": "node scripts/backup-content.js restore",
+    "backup:env": "node scripts/backup-env.js create",
+    "backup:env:list": "node scripts/backup-env.js list",
+    "backup:env:restore": "node scripts/backup-env.js restore",
+    "backup:all": "npm run backup && npm run backup:env",
     "content:update": "npm run backup && npm run dev",
     "content:deploy": "npm run backup && npm run update:deploy",
     "verify": "node scripts/verify-setup.js",
     "setup": "npm install && npm run verify",
-    "safe-deploy": "npm run pre-deploy && npm run deploy"
+    "safe-deploy": "npm run backup:all && npm run pre-deploy && npm run deploy"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.0.2",

@@ -1,124 +1,179 @@
 const fs = require('fs');
 const path = require('path');
-const CryptoJS = require('crypto-js');
-const { promisify } = require('util');
-const readFile = promisify(fs.readFile);
-const writeFile = promisify(fs.writeFile);
-const mkdir = promisify(fs.mkdir);
+const crypto = require('crypto');
 
-// Configuration
-const BACKUP_DIR = path.join(__dirname, '../.env-backups');
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'default-backup-key';
+// Environment files to manage
+const ENV_FILES = [
+  '.env.development',
+  '.env.production',
+  '.env.staging',
+  '.env.local'
+];
 
-async function backupEnvironmentFiles() {
-    try {
-        // Create backup directory if it doesn't exist
-        if (!fs.existsSync(BACKUP_DIR)) {
-            await mkdir(BACKUP_DIR);
-        }
+// Backup directory
+const BACKUP_DIR = 'env-backups';
 
-        // Get timestamp for backup files
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+// Encryption key from environment or generate one
+const ENCRYPTION_KEY = process.env.ENV_ENCRYPTION_KEY || 
+  crypto.randomBytes(32).toString('hex');
 
-        // List of environment files to backup
-        const envFiles = [
-            '.env',
-            '.env.development',
-            '.env.production',
-            '.env.staging'
-        ];
-
-        for (const envFile of envFiles) {
-            const filePath = path.join(__dirname, '..', envFile);
-            
-            // Skip if file doesn't exist
-            if (!fs.existsSync(filePath)) {
-                console.log(`Skipping ${envFile} - file not found`);
-                continue;
-            }
-
-            // Read environment file
-            const content = await readFile(filePath, 'utf8');
-
-            // Encrypt content
-            const encrypted = CryptoJS.AES.encrypt(content, ENCRYPTION_KEY).toString();
-
-            // Create backup file name
-            const backupFileName = `${envFile}-${timestamp}.backup`;
-            const backupPath = path.join(BACKUP_DIR, backupFileName);
-
-            // Save encrypted backup
-            await writeFile(backupPath, encrypted);
-            console.log(`✅ Backed up ${envFile} to ${backupFileName}`);
-        }
-
-        // Create manifest file
-        const manifest = {
-            timestamp,
-            files: fs.readdirSync(BACKUP_DIR),
-            createdAt: new Date().toISOString()
-        };
-
-        await writeFile(
-            path.join(BACKUP_DIR, 'manifest.json'),
-            JSON.stringify(manifest, null, 2)
-        );
-
-        console.log('\n✅ Environment backup completed successfully!');
-        console.log(`📁 Backup location: ${BACKUP_DIR}`);
-        console.log('\nTo restore backups, use:');
-        console.log('npm run restore-env -- --timestamp <backup-timestamp>');
-
-    } catch (error) {
-        console.error('❌ Error during backup:', error);
-        process.exit(1);
-    }
+function encrypt(text) {
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv('aes-256-cbc', 
+    Buffer.from(ENCRYPTION_KEY, 'hex'), iv);
+  let encrypted = cipher.update(text, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  return `${iv.toString('hex')}:${encrypted}`;
 }
 
-// Function to restore environment files
-async function restoreEnvironmentFiles(timestamp) {
-    try {
-        if (!timestamp) {
-            // If no timestamp provided, list available backups
-            const manifest = require(path.join(BACKUP_DIR, 'manifest.json'));
-            console.log('\nAvailable backups:');
-            console.log(JSON.stringify(manifest, null, 2));
-            return;
-        }
-
-        const backupFiles = fs.readdirSync(BACKUP_DIR)
-            .filter(file => file.includes(timestamp) && file.endsWith('.backup'));
-
-        if (backupFiles.length === 0) {
-            console.error(`❌ No backup files found for timestamp: ${timestamp}`);
-            return;
-        }
-
-        for (const backupFile of backupFiles) {
-            const encrypted = await readFile(path.join(BACKUP_DIR, backupFile), 'utf8');
-            const decrypted = CryptoJS.AES.decrypt(encrypted, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8);
-
-            const originalFileName = backupFile.replace(`-${timestamp}.backup`, '');
-            const restorePath = path.join(__dirname, '..', originalFileName);
-
-            await writeFile(restorePath, decrypted);
-            console.log(`✅ Restored ${originalFileName}`);
-        }
-
-        console.log('\n✅ Environment restoration completed successfully!');
-
-    } catch (error) {
-        console.error('❌ Error during restoration:', error);
-        process.exit(1);
-    }
+function decrypt(text) {
+  const [ivHex, encryptedText] = text.split(':');
+  const iv = Buffer.from(ivHex, 'hex');
+  const decipher = crypto.createDecipheriv('aes-256-cbc', 
+    Buffer.from(ENCRYPTION_KEY, 'hex'), iv);
+  let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+  return decrypted;
 }
 
-// Execute based on command line arguments
-const args = process.argv.slice(2);
-if (args.includes('--restore')) {
-    const timestampIndex = args.indexOf('--timestamp');
-    const timestamp = timestampIndex !== -1 ? args[timestampIndex + 1] : null;
-    restoreEnvironmentFiles(timestamp);
-} else {
-    backupEnvironmentFiles();
+function createBackup() {
+  const date = new Date().toISOString().split('T')[0];
+  const backupDir = path.join(BACKUP_DIR, date);
+
+  try {
+    // Create backup directory
+    fs.mkdirSync(backupDir, { recursive: true });
+
+    // Track which files were backed up
+    const backedUp = [];
+
+    // Backup each env file
+    ENV_FILES.forEach(file => {
+      if (fs.existsSync(file)) {
+        const content = fs.readFileSync(file, 'utf8');
+        const encrypted = encrypt(content);
+        const backupFile = path.join(backupDir, `${file}.enc`);
+        fs.writeFileSync(backupFile, encrypted);
+        backedUp.push(file);
+      }
+    });
+
+    if (backedUp.length === 0) {
+      console.log('⚠️  No environment files found to backup');
+      return;
+    }
+
+    console.log('✅ Environment files backed up successfully:');
+    backedUp.forEach(file => console.log(`   - ${file}`));
+    console.log(`\n📁 Backup location: ${backupDir}`);
+    console.log('\n🔐 Files are encrypted for security');
+    
+    // Save encryption key if it was generated
+    if (!process.env.ENV_ENCRYPTION_KEY) {
+      const keyFile = path.join(backupDir, 'encryption-key.txt');
+      fs.writeFileSync(keyFile, ENCRYPTION_KEY);
+      console.log(`\n⚠️  IMPORTANT: Encryption key saved to: ${keyFile}`);
+      console.log('   Keep this key safe - you need it to restore the backup!');
+    }
+
+  } catch (error) {
+    console.error('❌ Backup failed:', error.message);
+    process.exit(1);
+  }
+}
+
+function restoreBackup(date) {
+  const backupDir = path.join(BACKUP_DIR, date);
+
+  if (!fs.existsSync(backupDir)) {
+    console.error(`❌ No backup found for date: ${date}`);
+    process.exit(1);
+  }
+
+  try {
+    // Check for encryption key
+    let encryptionKey = ENCRYPTION_KEY;
+    const keyFile = path.join(backupDir, 'encryption-key.txt');
+    if (fs.existsSync(keyFile)) {
+      encryptionKey = fs.readFileSync(keyFile, 'utf8').trim();
+    }
+
+    // Restore each env file
+    const restored = [];
+    ENV_FILES.forEach(file => {
+      const backupFile = path.join(backupDir, `${file}.enc`);
+      if (fs.existsSync(backupFile)) {
+        const encrypted = fs.readFileSync(backupFile, 'utf8');
+        const decrypted = decrypt(encrypted);
+        fs.writeFileSync(file, decrypted);
+        restored.push(file);
+      }
+    });
+
+    if (restored.length === 0) {
+      console.log('⚠️  No environment files found in backup');
+      return;
+    }
+
+    console.log('✅ Environment files restored successfully:');
+    restored.forEach(file => console.log(`   - ${file}`));
+
+  } catch (error) {
+    console.error('❌ Restore failed:', error.message);
+    process.exit(1);
+  }
+}
+
+function listBackups() {
+  if (!fs.existsSync(BACKUP_DIR)) {
+    console.log('No backups found');
+    return;
+  }
+
+  const backups = fs.readdirSync(BACKUP_DIR)
+    .filter(file => fs.statSync(path.join(BACKUP_DIR, file)).isDirectory())
+    .sort((a, b) => b.localeCompare(a));
+
+  if (backups.length === 0) {
+    console.log('No backups found');
+    return;
+  }
+
+  console.log('Available backups:');
+  backups.forEach(backup => {
+    const backupDir = path.join(BACKUP_DIR, backup);
+    const files = fs.readdirSync(backupDir)
+      .filter(file => file.endsWith('.enc'))
+      .map(file => file.replace('.enc', ''));
+    console.log(`\n${backup}:`);
+    files.forEach(file => console.log(`   - ${file}`));
+  });
+}
+
+// Handle command line arguments
+const command = process.argv[2];
+const date = process.argv[3];
+
+if (command === 'restore' && !date) {
+  console.error('❌ Please provide a date to restore from');
+  console.log('Usage: node backup-env.js restore YYYY-MM-DD');
+  process.exit(1);
+}
+
+switch (command) {
+  case 'create':
+    createBackup();
+    break;
+  case 'restore':
+    restoreBackup(date);
+    break;
+  case 'list':
+    listBackups();
+    break;
+  default:
+    console.log('Usage:');
+    console.log('  Create backup: node backup-env.js create');
+    console.log('  Restore backup: node backup-env.js restore YYYY-MM-DD');
+    console.log('  List backups: node backup-env.js list');
+    process.exit(1);
 }
