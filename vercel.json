@@ -6,8 +6,8 @@
   "framework": "nextjs",
   "outputDirectory": ".next",
   "env": {
-    "NEXT_PUBLIC_API_URL": "@next_public_api_url",
-    "NEXT_PUBLIC_SITE_URL": "@next_public_site_url",
-    "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY": "@next_public_google_maps_api_key"
+    "NEXT_PUBLIC_API_URL": "https://drq-new.vercel.app/api",
+    "NEXT_PUBLIC_SITE_URL": "https://drq-new.vercel.app",
+    "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY": "AIzaSyAla8X965G083hcVBuF7DLhXjTehsP5eZI"
   }
 }
