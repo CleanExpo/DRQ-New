@@ -20,28 +20,6 @@ export async function reportError(error: Error | string, context?: Record<string
     Sentry.captureException(error, {
       extra: context
     });
-
-    // Send to New Relic if configured
-    if (process.env.NEW_RELIC_LICENSE_KEY && typeof window === 'undefined') {
-      try {
-        const newrelic = await import('newrelic/index.js');
-        newrelic.noticeError(error instanceof Error ? error : new Error(error.toString()), context);
-      } catch (e) {
-        console.error('Failed to load New Relic:', e);
-      }
-    }
-
-    // Log to LogRocket if configured
-    if (process.env.LOGROCKET_APP_ID && typeof window !== 'undefined') {
-      try {
-        const LogRocket = await import('logrocket');
-        LogRocket.captureException(error instanceof Error ? error : new Error(error.toString()), {
-          extra: context
-        });
-      } catch (e) {
-        console.error('Failed to load LogRocket:', e);
-      }
-    }
   }
 }
 
@@ -54,16 +32,6 @@ export async function trackMetric(metric: MetricPayload) {
       level: 'info',
       data: metric
     });
-
-    // Send to New Relic if configured
-    if (process.env.NEW_RELIC_LICENSE_KEY && typeof window === 'undefined') {
-      try {
-        const newrelic = await import('newrelic/index.js');
-        newrelic.recordMetric(metric.name, metric.value);
-      } catch (e) {
-        console.error('Failed to load New Relic:', e);
-      }
-    }
   }
 }
 
@@ -102,34 +70,6 @@ export async function sendAlert(message: string, level: AlertLevel = 'info', con
       level: level as Sentry.SeverityLevel,
       data: context
     });
-
-    // New Relic
-    if (process.env.NEW_RELIC_LICENSE_KEY && typeof window === 'undefined') {
-      try {
-        const newrelic = await import('newrelic/index.js');
-        newrelic.recordCustomEvent('Alert', {
-          message,
-          level,
-          ...context
-        });
-      } catch (e) {
-        console.error('Failed to load New Relic:', e);
-      }
-    }
-
-    // LogRocket
-    if (process.env.LOGROCKET_APP_ID && typeof window !== 'undefined') {
-      try {
-        const LogRocket = await import('logrocket');
-        LogRocket.track('Alert', {
-          message,
-          level,
-          ...context
-        });
-      } catch (e) {
-        console.error('Failed to load LogRocket:', e);
-      }
-    }
   }
 }
 
