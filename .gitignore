@@ -62,3 +62,4 @@ Thumbs.db
 # Local development files
 /public/images/temp/
 /public/uploads/
+env-backups/
