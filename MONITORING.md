@@ -14,21 +14,30 @@ npm run monitor:health
 npm run monitor --watch
 ```
 
-## Monitoring Systems
+## Automated Monitoring
 
-### Sentry
+### GitHub Actions Workflow
+- Runs every 15 minutes
+- Performs health checks
+- Monitors performance
+- Reports to monitoring services
+- Creates alerts for issues
+
+### Monitoring Services
+
+#### Sentry
 - Error tracking
 - Performance monitoring
 - User session replay
 - Issue management
 
-### New Relic
+#### New Relic
 - Application performance monitoring
 - Infrastructure monitoring
 - Real-time analytics
 - Custom dashboards
 
-### LogRocket
+#### LogRocket
 - Session recording
 - Error tracking
 - Performance monitoring
@@ -85,10 +94,30 @@ npm run monitor --watch
 - Error: Critical problems
 
 ### Alert Channels
-- Slack notifications
-- Email alerts
+- Slack notifications (every 15 minutes)
+- Email alerts (critical issues)
+- GitHub issues (failures)
 - SMS (critical only)
-- GitHub issues
+
+## Automated Responses
+
+### Health Check Failures
+1. Creates GitHub issue
+2. Sends Slack notification
+3. Records in New Relic
+4. Reports to Sentry
+
+### Performance Issues
+1. Records metrics
+2. Triggers alerts if thresholds exceeded
+3. Creates performance report
+4. Updates dashboards
+
+### Cache Issues
+1. Attempts automatic refresh
+2. Reports cache statistics
+3. Monitors recovery
+4. Updates status
 
 ## Monitoring Dashboard
 
@@ -148,7 +177,7 @@ npm run monitor --db-check
 ## Best Practices
 
 ### Monitoring
-1. Regular health checks
+1. Regular health checks (automated every 15 minutes)
 2. Performance baselines
 3. Error tracking
 4. User impact analysis
@@ -233,4 +262,4 @@ NEW_RELIC_APP_NAME=your-app
 LOGROCKET_APP_ID=your-app-id
 ```
 
-Remember: Regular monitoring and proactive maintenance are key to system reliability.
+Remember: The automated monitoring system runs every 15 minutes and provides comprehensive coverage of system health and performance.
