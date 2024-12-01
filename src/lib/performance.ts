@@ -1,169 +1,147 @@
-// Performance monitoring and reporting utilities
-
-interface PerformanceMetrics {
-  FCP: number;  // First Contentful Paint
-  LCP: number;  // Largest Contentful Paint
-  FID: number;  // First Input Delay
-  CLS: number;  // Cumulative Layout Shift
-  TTFB: number; // Time to First Byte
-}
-
-interface WebVitalsMetric {
-  name: string;
-  delta: number;
+interface PerformanceMetric {
   id: string;
+  name: string;
+  value: number;
+  timestamp: number;
 }
 
+interface PerformanceEvent {
+  id: string;
+  name: string;
+  startTime: number;
+  duration: number;
+  timestamp: number;
+}
+
+// Initialize performance monitoring
+export function initPerformanceMonitoring() {
+  if (typeof window === 'undefined') return;
+
+  // Create a PerformanceObserver to monitor long tasks
+  const longTaskObserver = new PerformanceObserver((list) => {
+    list.getEntries().forEach((entry) => {
+      reportPerformanceMetric({
+        name: 'long-task',
+        value: entry.duration,
+        timestamp: entry.startTime,
+        id: `lt-${Date.now()}`
+      });
+    });
+  });
+
+  // Create a PerformanceObserver for First Input Delay
+  const fidObserver = new PerformanceObserver((list) => {
+    list.getEntries().forEach((entry) => {
+      const event = entry as PerformanceEventTiming;
+      reportPerformanceEvent({
+        name: 'first-input-delay',
+        startTime: event.startTime,
+        duration: event.duration,
+        timestamp: Date.now(),
+        id: `fid-${Date.now()}`
+      });
+    });
+  });
+
+  try {
+    // Start observing long tasks
+    longTaskObserver.observe({ entryTypes: ['longtask'] });
+    // Start observing FID
+    fidObserver.observe({ entryTypes: ['first-input'] });
+  } catch (error) {
+    console.error('Performance monitoring initialization failed:', error);
+  }
+}
+
+// Report a performance metric
+export function reportPerformanceMetric(metric: PerformanceMetric) {
+  try {
+    // Get existing metrics from localStorage
+    const metrics = JSON.parse(localStorage.getItem('performance_metrics') || '[]');
+    
+    // Add new metric
+    metrics.push({
+      ...metric,
+      timestamp: metric.timestamp || Date.now()
+    });
+
+    // Store updated metrics
+    localStorage.setItem('performance_metrics', JSON.stringify(metrics));
+
+    // Send metric to analytics if available
+    if (window.gtag) {
+      window.gtag('event', 'performance_metric', {
+        metric_name: metric.name,
+        metric_value: metric.value,
+        metric_id: metric.id
+      });
+    }
+  } catch (error) {
+    console.error('Failed to report performance metric:', error);
+  }
+}
+
+// Report a performance event
+export function reportPerformanceEvent(event: PerformanceEvent) {
+  try {
+    // Get existing events from localStorage
+    const events = JSON.parse(localStorage.getItem('performance_events') || '[]');
+    
+    // Add new event
+    events.push({
+      ...event,
+      timestamp: event.timestamp || Date.now()
+    });
+
+    // Store updated events
+    localStorage.setItem('performance_events', JSON.stringify(events));
+
+    // Send event to analytics if available
+    if (window.gtag) {
+      window.gtag('event', 'performance_event', {
+        event_name: event.name,
+        event_duration: event.duration,
+        event_id: event.id
+      });
+    }
+  } catch (error) {
+    console.error('Failed to report performance event:', error);
+  }
+}
+
+// Get all performance metrics
+export function getPerformanceMetrics(): PerformanceMetric[] {
+  try {
+    return JSON.parse(localStorage.getItem('performance_metrics') || '[]');
+  } catch (error) {
+    console.error('Failed to get performance metrics:', error);
+    return [];
+  }
+}
+
+// Get all performance events
+export function getPerformanceEvents(): PerformanceEvent[] {
+  try {
+    return JSON.parse(localStorage.getItem('performance_events') || '[]');
+  } catch (error) {
+    console.error('Failed to get performance events:', error);
+    return [];
+  }
+}
+
+// Clear all performance data
+export function clearPerformanceData() {
+  try {
+    localStorage.removeItem('performance_metrics');
+    localStorage.removeItem('performance_events');
+  } catch (error) {
+    console.error('Failed to clear performance data:', error);
+  }
+}
+
+// Declare global gtag function
 declare global {
   interface Window {
-    gtag?: (command: string, name: string, params: Record<string, unknown>) => void;
+    gtag: (command: string, action: string, params: any) => void;
   }
-}
-
-export function initializePerformanceMonitoring(): void {
-  if (typeof window === 'undefined') return;
-
-  // Report Web Vitals to Google Analytics
-  const reportWebVitals = ({ name, delta, id }: WebVitalsMetric): void => {
-    if (typeof window.gtag === 'function') {
-      window.gtag('event', name, {
-        event_category: 'Web Vitals',
-        event_label: id,
-        value: Math.round(name === 'CLS' ? delta * 1000 : delta),
-        non_interaction: true,
-      });
-    }
-  };
-
-  // Initialize Performance Observer for LCP
-  if (PerformanceObserver) {
-    // LCP
-    new PerformanceObserver((entryList) => {
-      const entries = entryList.getEntries();
-      const lastEntry = entries[entries.length - 1];
-      reportWebVitals({
-        name: 'LCP',
-        delta: lastEntry.startTime,
-        id: lastEntry.id || String(Date.now())
-      });
-    }).observe({ entryTypes: ['largest-contentful-paint'] });
-
-    // FID
-    new PerformanceObserver((entryList) => {
-      const entries = entryList.getEntries();
-      entries.forEach(entry => {
-        if (entry instanceof PerformanceEventTiming) {
-          reportWebVitals({
-            name: 'FID',
-            delta: entry.processingStart - entry.startTime,
-            id: entry.id || String(Date.now())
-          });
-        }
-      });
-    }).observe({ entryTypes: ['first-input'] });
-
-    // CLS
-    let clsValue = 0;
-    let clsEntries: PerformanceEntry[] = [];
-
-    new PerformanceObserver((entryList) => {
-      const entries = entryList.getEntries() as LayoutShift[];
-      entries.forEach(entry => {
-        if (!entry.hadRecentInput) {
-          const firstSessionEntry = clsEntries[0];
-          const lastSessionEntry = clsEntries[clsEntries.length - 1];
-          
-          if (firstSessionEntry && entry.startTime - lastSessionEntry.startTime < 1000 && entry.startTime - firstSessionEntry.startTime < 5000) {
-            clsValue += entry.value;
-            clsEntries.push(entry);
-          } else {
-            clsEntries = [entry];
-            clsValue = entry.value;
-          }
-        }
-      });
-
-      reportWebVitals({
-        name: 'CLS',
-        delta: clsValue,
-        id: 'cls-' + Date.now()
-      });
-    }).observe({ entryTypes: ['layout-shift'] });
-  }
-}
-
-// Function to check if the page meets Core Web Vitals thresholds
-export function checkCoreWebVitals(metrics: PerformanceMetrics): boolean {
-  return (
-    metrics.LCP <= 2500 && // Good LCP is under 2.5s
-    metrics.FID <= 100 &&  // Good FID is under 100ms
-    metrics.CLS <= 0.1     // Good CLS is under 0.1
-  );
-}
-
-// Optimize image loading
-export function optimizeImageLoading(): void {
-  if (typeof window === 'undefined') return;
-
-  // Detect support for native lazy loading
-  const hasNativeLazyLoading = 'loading' in HTMLImageElement.prototype;
-
-  // Find all images without explicit loading attribute
-  const images = document.querySelectorAll('img:not([loading])');
-  
-  images.forEach(img => {
-    if (hasNativeLazyLoading) {
-      // Use native lazy loading if supported
-      img.setAttribute('loading', 'lazy');
-    } else {
-      // Fallback to intersection observer
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const image = entry.target as HTMLImageElement;
-            if (image.dataset.src) {
-              image.src = image.dataset.src;
-            }
-            observer.unobserve(image);
-          }
-        });
-      });
-
-      observer.observe(img);
-    }
-  });
-}
-
-// Optimize font loading
-export function optimizeFontLoading(): void {
-  if (typeof window === 'undefined') return;
-
-  // Add font preload links
-  const fonts = [
-    { href: '/fonts/inter-var.woff2', type: 'font/woff2' },
-    { href: '/fonts/montserrat-var.woff2', type: 'font/woff2' }
-  ];
-
-  fonts.forEach(font => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'font';
-    link.type = font.type;
-    link.href = font.href;
-    link.crossOrigin = 'anonymous';
-    document.head.appendChild(link);
-  });
-}
-
-// Initialize all performance optimizations
-export function initializeOptimizations(): void {
-  initializePerformanceMonitoring();
-  optimizeImageLoading();
-  optimizeFontLoading();
-}
-
-// Types for Layout Shift entries
-interface LayoutShift extends PerformanceEntry {
-  value: number;
-  hadRecentInput: boolean;
 }

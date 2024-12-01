@@ -1,103 +1,102 @@
 import { createApi } from 'unsplash-js';
 
+// Initialize the Unsplash API client
 const unsplash = createApi({
-  accessKey: process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY || '',
+  accessKey: process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY || ''
 });
 
-interface ImageDetails {
-  url: string;
-  blurDataUrl?: string;
-  alt: string;
-  credit: {
-    name: string;
-    link: string;
-  };
+// Function to get optimized image URL
+export function getImageUrl(path: string): string {
+  // If it's an external URL, return as is
+  if (path.startsWith('http')) {
+    return path;
+  }
+
+  // If it's a local image, add the base URL
+  return `${process.env.NEXT_PUBLIC_SITE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 }
 
-const IMAGE_CACHE: { [key: string]: ImageDetails } = {};
+// Function to get image dimensions
+export async function getImageDimensions(url: string): Promise<{ width: number; height: number }> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      resolve({
+        width: img.width,
+        height: img.height
+      });
+    };
+    img.src = url;
+  });
+}
 
-export async function getServiceImage(serviceName: string, query?: string): Promise<ImageDetails | null> {
-  if (!process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY) {
-    console.warn('Unsplash API key not configured');
-    return null;
-  }
-
-  // Check cache first
-  const cacheKey = `${serviceName}-${query || ''}`;
-  if (IMAGE_CACHE[cacheKey]) {
-    return IMAGE_CACHE[cacheKey];
-  }
-
+// Function to search Unsplash images
+export async function searchImages(query: string, page = 1, perPage = 10) {
   try {
-    // Search for relevant image
-    const searchQuery = query || `${serviceName} service professional`;
     const result = await unsplash.search.getPhotos({
-      query: searchQuery,
-      orientation: 'landscape',
-      perPage: 1,
+      query,
+      page,
+      perPage,
+      orientation: 'landscape'
     });
 
     if (result.errors) {
-      console.error('Error fetching image from Unsplash:', result.errors[0]);
+      console.error('Error searching Unsplash:', result.errors[0]);
       return null;
     }
 
-    const photo = result.response?.results[0];
-    if (!photo) return null;
-
-    const imageDetails: ImageDetails = {
-      url: photo.urls.regular,
-      alt: photo.alt_description || `${serviceName} service image`,
-      credit: {
-        name: photo.user.name,
-        link: photo.user.links.html,
-      },
-    };
-
-    // Cache the result
-    IMAGE_CACHE[cacheKey] = imageDetails;
-
-    return imageDetails;
+    return result.response;
   } catch (error) {
-    console.error('Error fetching image:', error);
+    console.error('Error searching Unsplash:', error);
     return null;
   }
 }
 
-// Function to get location-specific images
-export async function getLocationImage(locationName: string): Promise<ImageDetails | null> {
-  return getServiceImage(locationName, `${locationName} city landscape`);
+// Function to get a random image
+export async function getRandomImage(query: string) {
+  try {
+    const result = await unsplash.photos.getRandom({
+      query,
+      orientation: 'landscape'
+    });
+
+    if (result.errors) {
+      console.error('Error getting random image:', result.errors[0]);
+      return null;
+    }
+
+    return result.response;
+  } catch (error) {
+    console.error('Error getting random image:', error);
+    return null;
+  }
 }
 
-// Preload common service images
-export async function preloadServiceImages(): Promise<void> {
-  const commonServices = [
-    'water damage',
-    'fire damage',
-    'mould remediation',
-    'flood cleanup',
-    'storm damage',
-  ];
-
-  await Promise.all(
-    commonServices.map(service => getServiceImage(service))
-  );
-}
-
-// Get optimized image URL with proper sizing
-export function getOptimizedImageUrl(url: string, width: number = 1200): string {
+// Function to optimize image URL with parameters
+export function optimizeImage(url: string, width?: number, quality = 75): string {
   if (!url) return '';
   
-  // If it's already an Unsplash URL, add sizing parameters
-  if (url.includes('images.unsplash.com')) {
-    return `${url}&w=${width}&q=80&auto=format`;
-  }
-  
-  // For other URLs, return as is
-  return url;
+  // If it's already an optimized URL, return as is
+  if (url.includes('?')) return url;
+
+  // Add optimization parameters
+  const params = new URLSearchParams();
+  if (width) params.append('w', width.toString());
+  params.append('q', quality.toString());
+  params.append('auto', 'format');
+
+  return `${url}?${params.toString()}`;
 }
 
-// Generate blur data URL for images (placeholder)
-export function generateBlurDataUrl(width: number = 10, height: number = 6): string {
-  return `data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}"></svg>`;
+// Function to get placeholder blur data URL
+export async function getBlurDataUrl(url: string): Promise<string> {
+  try {
+    const response = await fetch(url);
+    const buffer = await response.arrayBuffer();
+    const base64 = Buffer.from(buffer).toString('base64');
+    return `data:image/jpeg;base64,${base64}`;
+  } catch (error) {
+    console.error('Error generating blur data URL:', error);
+    return '';
+  }
 }
