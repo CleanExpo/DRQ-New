@@ -27,10 +27,11 @@
     "verify": "node scripts/verify-setup.js",
     "setup": "npm install && npm run verify",
     "safe-deploy": "npm run backup:all && npm run pre-deploy && npm run deploy",
-    "clean": "rm -rf .next node_modules/.cache",
-    "clean:full": "rm -rf .next node_modules && npm install",
+    "clean": "rimraf .next node_modules/.cache",
+    "clean:full": "rimraf .next node_modules && npm install",
     "type-check": "tsc --noEmit",
-    "analyze": "ANALYZE=true npm run build"
+    "analyze": "cross-env ANALYZE=true npm run build",
+    "security": "npm audit fix && npm audit"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.0.2",
@@ -42,19 +43,25 @@
     "next": "^14.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "debug": "^4.3.4",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@next/bundle-analyzer": "^14.0.4",
     "@types/node": "^20.10.4",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
     "autoprefixer": "^10.4.16",
+    "cross-env": "^7.0.3",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.0.4",
     "postcss": "^8.4.32",
+    "rimraf": "^5.0.5",
     "tailwindcss": "^3.3.6",
     "typescript": "^5.3.3",
     "vercel": "^32.6.1"
   },
-  "devDependencies": {
-    "@next/bundle-analyzer": "^14.0.4",
-    "cross-env": "^7.0.3"
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
