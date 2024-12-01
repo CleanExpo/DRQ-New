@@ -96,14 +96,26 @@ async function monitorSystem() {
         const client = new MongoClient(process.env.MONGODB_URI);
         await client.connect();
         const db = client.db();
-        const cacheStats = await db.collection('cache').stats();
+        
+        // Get cache collection info
+        const cacheCollection = db.collection('cache');
+        const cacheCount = await cacheCollection.countDocuments();
+        const lastRefresh = await cacheCollection.findOne(
+          {},
+          { 
+            sort: { cacheRefreshedAt: -1 },
+            projection: { cacheRefreshedAt: 1 }
+          }
+        );
+
+        // Get database stats
+        const dbStats = await db.stats();
+        const cacheSize = Math.round(dbStats.dataSize / 1024 / 1024);
+
         console.log('📦 Cache:', {
-          size: `${Math.round(cacheStats.size / 1024 / 1024)}MB`,
-          documents: cacheStats.count,
-          lastRefresh: await db.collection('cache').findOne(
-            {},
-            { sort: { cacheRefreshedAt: -1 } }
-          )?.cacheRefreshedAt
+          size: `${cacheSize}MB`,
+          documents: cacheCount,
+          lastRefresh: lastRefresh?.cacheRefreshedAt || 'Never'
         });
         await client.close();
       } catch (error) {
