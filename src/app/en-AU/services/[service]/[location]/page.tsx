@@ -1,110 +1,113 @@
 import { Metadata } from 'next';
 import { ServicePage } from '@/components/templates/ServicePage';
-import { getServiceContent } from '@/lib/services';
-import { getLocationBySlug } from '@/lib/locations';
-import { getServiceImage, getLocationImage } from '@/lib/images';
-import { ServiceContent } from '@/types/services';
+import { ServiceFeatures } from '@/components/shared/ServiceFeatures';
+import { NearbyLocations } from '@/components/shared/NearbyLocations';
+import { ProcessSteps } from '@/components/shared/ProcessSteps';
+import { ServicesOverview } from '@/components/shared/ServicesOverview';
+import { FAQ } from '@/components/shared/FAQ';
+import { SchemaProvider } from '@/components/SchemaProvider';
 
-interface ServiceLocationPageParams {
-  service: string;
-  location: string;
+interface ServiceContent {
+  title: string;
+  description: string;
+  image: string;
+  features: Array<{ title: string; description: string }>;
+  steps: Array<{ title: string; description: string }>;
+  faqs: Array<{ question: string; answer: string }>;
 }
 
-export async function generateMetadata({ params }: { params: ServiceLocationPageParams }): Promise<Metadata> {
-  const serviceContent = getServiceContent(params.service);
-  const location = getLocationBySlug(params.location);
-
-  if (!serviceContent || !location) {
-    return {
-      title: 'Service Location Not Found',
-      description: 'The requested service location could not be found.'
-    };
-  }
-
-  const locationImage = location.image ? getLocationImage(location) : null;
-  const serviceImage = getServiceImage(params.service);
-
-  const title = `${serviceContent.title} in ${location.name}`;
-  const description = `Professional ${serviceContent.title.toLowerCase()} services in ${location.name}. ${serviceContent.description}`;
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      images: [
-        {
-          url: locationImage?.url || serviceImage,
-          width: locationImage?.width || 1200,
-          height: locationImage?.height || 630,
-          alt: locationImage?.alt || title,
-        },
-      ],
+const localizedContent: ServiceContent = {
+  title: "Water Damage Restoration",
+  description: "Professional water damage restoration services for homes and businesses. Fast response, expert team, and guaranteed results.",
+  image: "/images/water-damage-restoration.jpg",
+  features: [
+    {
+      title: "24/7 Emergency Response",
+      description: "Immediate assistance when you need it most"
     },
-  };
-}
-
-export default function ServiceLocationPage({ params }: { params: ServiceLocationPageParams }) {
-  const serviceContent = getServiceContent(params.service);
-  const location = getLocationBySlug(params.location);
-
-  if (!serviceContent || !location) {
-    return null;
-  }
-
-  const locationImage = location.image ? getLocationImage(location) : null;
-  const serviceImage = getServiceImage(params.service);
-
-  // Get nearby locations that offer this service
-  const nearbyLocations = location.nearbyLocations?.filter(nearby => {
-    const nearbyLocation = getLocationBySlug(nearby.url.split('/').pop() || '');
-    return nearbyLocation?.services.includes(params.service);
-  }) || [];
-
-  const localizedContent: ServiceContent = {
-    title: `${serviceContent.title} in ${location.name}`,
-    description: `Professional ${serviceContent.title.toLowerCase()} services in ${location.name}. ${serviceContent.description}`,
-    image: locationImage?.url || serviceImage,
-    features: serviceContent.features,
-    location,
-    nearbyLocations,
-    schema: {
-      service: {
-        "@type": "Service",
-        name: serviceContent.title,
-        description: `Professional ${serviceContent.title.toLowerCase()} services in ${location.name}`,
-        provider: {
-          "@type": "LocalBusiness",
-          name: "Disaster Recovery Queensland",
-          address: {
-            "@type": "PostalAddress",
-            streetAddress: location.address.streetAddress,
-            addressLocality: location.address.suburb,
-            addressRegion: location.address.state,
-            postalCode: location.address.postcode,
-            addressCountry: location.address.country,
-          },
-        },
-        areaServed: {
-          "@type": "City",
-          name: location.name,
-          address: {
-            "@type": "PostalAddress",
-            addressLocality: location.address.suburb,
-            addressRegion: location.address.state,
-            postalCode: location.address.postcode,
-            addressCountry: location.address.country,
-          },
-          geo: {
-            "@type": "GeoCoordinates",
-            latitude: location.coordinates.latitude,
-            longitude: location.coordinates.longitude,
-          },
-        },
-      },
+    {
+      title: "Advanced Water Extraction",
+      description: "Professional grade equipment for efficient water removal"
     },
+    {
+      title: "Complete Drying Solutions",
+      description: "Industrial dehumidifiers and air movers"
+    },
+    {
+      title: "Mould Prevention",
+      description: "Treatments to prevent future mould growth"
+    }
+  ],
+  steps: [
+    {
+      title: "Emergency Contact",
+      description: "Call our 24/7 hotline for immediate response"
+    },
+    {
+      title: "Inspection",
+      description: "Thorough assessment of water damage"
+    },
+    {
+      title: "Water Extraction",
+      description: "Remove standing water and begin drying"
+    },
+    {
+      title: "Drying & Monitoring",
+      description: "Complete moisture removal and documentation"
+    }
+  ],
+  faqs: [
+    {
+      question: "How quickly can you respond to water damage emergencies?",
+      answer: "We provide 24/7 emergency response and aim to arrive within 1-2 hours of your call in most service areas."
+    },
+    {
+      question: "What should I do while waiting for your team to arrive?",
+      answer: "If safe, turn off the water source, remove valuable items from wet areas, and start removing excess water. Don't enter areas with electrical hazards."
+    },
+    {
+      question: "How long does water damage restoration take?",
+      answer: "The timeline varies depending on the extent of damage, typically 3-5 days for drying and basic restoration, longer for extensive repairs."
+    }
+  ]
+};
+
+export default function ServiceLocationPage({ params }: { params: { service: string; location: string } }) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: localizedContent.title,
+    provider: {
+      "@type": "LocalBusiness",
+      name: "Disaster Recovery QLD",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: params.location,
+        addressRegion: "QLD",
+        addressCountry: "AU"
+      }
+    },
+    areaServed: {
+      "@type": "City",
+      name: params.location
+    },
+    description: localizedContent.description
   };
 
-  return <ServicePage service={localizedContent} slug={params.service} />;
+  return (
+    <SchemaProvider schema={schema}>
+      <ServicePage
+        title={localizedContent.title}
+        description={localizedContent.description}
+        image={localizedContent.image}
+        imageAlt={`${localizedContent.title} in ${params.location}`}
+      >
+        <ServiceFeatures features={localizedContent.features} />
+        <ProcessSteps steps={localizedContent.steps} />
+        <FAQ faqs={localizedContent.faqs} />
+        <ServicesOverview />
+        <NearbyLocations />
+      </ServicePage>
+    </SchemaProvider>
+  );
 }
