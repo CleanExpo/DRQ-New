@@ -31,7 +31,13 @@
     "clean:full": "rimraf .next node_modules && npm install",
     "type-check": "tsc --noEmit",
     "analyze": "cross-env ANALYZE=true npm run build",
-    "security": "npm audit fix && npm audit"
+    "security": "npm audit fix && npm audit",
+    "env:prod": "node scripts/switch-env.js production",
+    "env:dev": "node scripts/switch-env.js development",
+    "env:staging": "node scripts/switch-env.js staging",
+    "env:backup": "npm run backup:env",
+    "env:list": "npm run backup:env:list",
+    "env:restore": "npm run backup:env:restore"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.0.2",
