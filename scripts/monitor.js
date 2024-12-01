@@ -1,29 +1,37 @@
 #!/usr/bin/env node
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
-import dotenv from 'dotenv';
-import { MongoClient } from 'mongodb';
-import Redis from 'ioredis';
+const path = require('path');
+const dotenv = require('dotenv');
+const { MongoClient } = require('mongodb');
+const Redis = require('ioredis');
 
 // Load environment variables
 dotenv.config();
-
-// Get directory name
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Import monitoring modules using file URLs
-const monitoringPath = new URL('../src/lib/monitoring.ts', import.meta.url);
-const typesPath = new URL('../src/types/monitoring.ts', import.meta.url);
-
-const { monitoring } = await import(fileURLToPath(monitoringPath));
-const { DEFAULT_THRESHOLDS } = await import(fileURLToPath(typesPath));
 
 // Parse command line arguments
 const args = process.argv.slice(2);
 const showStatus = args.includes('--status');
 const checkHealth = args.includes('--health');
 const watchMode = args.includes('--watch');
+
+// Import monitoring modules
+const monitoring = require('../src/lib/monitoring');
+
+// Default thresholds
+const DEFAULT_THRESHOLDS = {
+  cache: {
+    refreshDuration: 60000,  // 1 minute
+    errorRate: 0.05,         // 5%
+    maxSize: 1000000000      // 1GB
+  },
+  api: {
+    responseTime: 5000,      // 5 seconds
+    errorRate: 0.01          // 1%
+  },
+  database: {
+    queryTime: 1000,         // 1 second
+    connectionTime: 5000     // 5 seconds
+  }
+};
 
 async function monitorSystem() {
   console.log('🔍 Starting system monitoring...\n');
