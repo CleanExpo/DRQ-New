@@ -13,18 +13,18 @@ const nextConfig = {
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
   },
   experimental: {
-    turbotrace: false
+    turbotrace: {
+      enabled: false
+    }
   },
   webpack: (config, { dev, isServer }) => {
     // Handle monitoring modules in client-side builds
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
-        newrelic: false,
         fs: false,
         net: false,
-        tls: false,
-        'newrelic/index.js': false,
+        tls: false
       };
 
       // Ignore monitoring-related files
