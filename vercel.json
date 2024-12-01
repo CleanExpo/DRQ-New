@@ -2,12 +2,5 @@
   "version": 2,
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
-  "installCommand": "npm install",
-  "framework": "nextjs",
-  "outputDirectory": ".next",
-  "env": {
-    "NEXT_PUBLIC_API_URL": "https://drq-new.vercel.app/api",
-    "NEXT_PUBLIC_SITE_URL": "https://drq-new.vercel.app",
-    "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY": "AIzaSyAla8X965G083hcVBuF7DLhXjTehsP5eZI"
-  }
+  "framework": "nextjs"
 }
