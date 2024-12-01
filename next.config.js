@@ -13,15 +13,25 @@ const nextConfig = {
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
   },
   experimental: {
-    turbotrace: {
-      logLevel: 'error',
-      memoryLimit: 4096
-    }
+    turbotrace: false
   },
   webpack: (config, { dev, isServer }) => {
-    // Ignore New Relic files in client-side builds
+    // Handle monitoring modules in client-side builds
     if (!isServer) {
-      config.resolve.alias['newrelic'] = false;
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        newrelic: false,
+        fs: false,
+        net: false,
+        tls: false,
+        'newrelic/index.js': false,
+      };
+
+      // Ignore monitoring-related files
+      config.module.rules.push({
+        test: /\.(md|txt|LICENSE)$/,
+        use: 'null-loader'
+      });
     }
 
     // Optimize CSS
