@@ -18,18 +18,26 @@ export function GoogleMap({ address, zoom = 14, height = '400px' }: GoogleMapPro
 
     // Initialize the map
     const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({ address }, (results, status) => {
-      if (status === 'OK' && results && results[0]) {
-        const map = new google.maps.Map(mapRef.current!, {
+    const geocoderRequest: google.maps.GeocoderRequest = {
+      address
+    };
+
+    geocoder.geocode(geocoderRequest, (results, status) => {
+      if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
+        const mapOptions: google.maps.MapOptions = {
           center: results[0].geometry.location,
           zoom,
-        });
+        };
+
+        const map = new google.maps.Map(mapRef.current!, mapOptions);
 
         // Add a marker
-        new google.maps.Marker({
+        const markerOptions: google.maps.MarkerOptions = {
           map,
           position: results[0].geometry.location,
-        });
+        };
+
+        new google.maps.Marker(markerOptions);
       }
     });
   }, [address, zoom, scriptLoaded.current]);
