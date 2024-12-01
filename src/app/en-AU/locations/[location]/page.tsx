@@ -1,11 +1,10 @@
-import { Metadata } from 'next';
+'use client';
+
+import { GoogleMap } from '@/components/maps/GoogleMap';
+import { getLocation, getLocations } from '@/lib/locations';
+import { getServices } from '@/lib/services';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { LOCATIONS, getLocationBySlug, getNearbyLocations } from '@/config/locations';
-import { SERVICE_CONTENT } from '@/config/content';
-import { GoogleMap } from '@/components/maps/GoogleMap';
-import { SchemaProvider } from '@/components/SchemaProvider';
-import { getLocationImage } from '@/lib/images';
 
 interface LocationPageProps {
   params: {
@@ -13,175 +12,90 @@ interface LocationPageProps {
   };
 }
 
-export async function generateMetadata({ params }: LocationPageProps): Promise<Metadata> {
-  const location = getLocationBySlug(params.location);
-  if (!location) return {};
+export default function LocationPage({ params }: LocationPageProps) {
+  const location = getLocation(params.location);
+  const services = getServices();
+  const nearbyLocations = getLocations()
+    .filter(l => l.id !== location?.id)
+    .slice(0, 3);
 
-  return {
-    title: `Emergency Restoration Services in ${location.name} | DRQ`,
-    description: location.metaDescription || 
-      `Professional disaster recovery services in ${location.name}. 24/7 emergency response for water damage, fire damage, and mould remediation in ${location.suburbs?.slice(0, 3).join(', ')} and surrounding areas.`,
-    openGraph: {
-      title: `Disaster Recovery Services in ${location.name}`,
-      description: location.metaDescription,
-      images: [{ url: '/images/locations/${location.slug}.jpg' }]
-    }
-  };
-}
-
-export default async function LocationPage({ params }: LocationPageProps) {
-  const location = getLocationBySlug(params.location);
-  if (!location) notFound();
-
-  const nearbyLocations = getNearbyLocations(params.location, 3);
-  const locationImage = await getLocationImage(location.name);
-  const services = Object.values(SERVICE_CONTENT);
+  if (!location) {
+    notFound();
+  }
 
   return (
-    <div className="min-h-screen py-12">
-      <SchemaProvider
-        schemas={[
-          {
-            "@context": "https://schema.org",
-            "@type": "LocalBusiness",
-            name: `Disaster Recovery Queensland - ${location.name}`,
-            image: locationImage?.url || '/images/locations/${location.slug}.jpg',
-            "@id": `${process.env.NEXT_PUBLIC_SITE_URL}/en-AU/locations/${location.slug}`,
-            url: `${process.env.NEXT_PUBLIC_SITE_URL}/en-AU/locations/${location.slug}`,
-            telephone: "+61-1300-000-000",
-            priceRange: "$$",
-            address: {
-              "@type": "PostalAddress",
-              streetAddress: "",
-              addressLocality: location.name,
-              addressRegion: location.state,
-              postalCode: location.postcode,
-              addressCountry: "AU"
-            },
-            geo: {
-              "@type": "GeoCoordinates",
-              latitude: location.coordinates.lat,
-              longitude: location.coordinates.lng
-            },
-            areaServed: location.suburbs?.map(suburb => ({
-              "@type": "City",
-              name: suburb
-            }))
-          }
-        ]}
-      />
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-4xl font-bold mb-8">
+        {location.name} Emergency Restoration Services
+      </h1>
 
-      <div className="container mx-auto px-4">
-        <h1 className="text-4xl font-bold mb-8">
-          Emergency Restoration Services in {location.name}
-        </h1>
+      {/* Location Map */}
+      <section className="mb-12">
+        <GoogleMap 
+          center={{ 
+            lat: location.coordinates.lat, 
+            lng: location.coordinates.lng 
+          }}
+          zoom={12}
+          height="400px"
+          className="mb-6"
+        />
+        <p className="text-gray-600">
+          {location.description}
+        </p>
+      </section>
 
-        {/* Location Overview */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-          <div>
-            <p className="text-lg mb-6">{location.metaDescription}</p>
-            
-            {/* Services List */}
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold mb-4">Our Services in {location.name}</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {services.map((service) => (
-                  <Link
-                    key={service.title}
-                    href={`/en-AU/services/${service.title.toLowerCase().replace(/ /g, '-')}/${location.slug}`}
-                    className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    <h3 className="font-semibold mb-2">{service.title}</h3>
-                    <p className="text-sm text-gray-600">{service.description}</p>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* Areas Served */}
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold mb-4">Areas We Serve in {location.name}</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {location.suburbs?.map((suburb) => (
-                  <div key={suburb} className="p-2 bg-gray-50 rounded">
-                    {suburb}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Map and Contact */}
-          <div>
-            <div className="h-[400px] mb-6">
-              <GoogleMap
-                address={`${location.name}, ${location.state} ${location.postcode}`}
-                zoom={12}
-                height="100%"
-              />
-            </div>
-            <div className="bg-primary-50 p-6 rounded-lg">
-              <h2 className="text-2xl font-bold mb-4">24/7 Emergency Response</h2>
-              <p className="mb-4">
-                Our {location.name} team is available 24/7 for emergency restoration services.
-                We typically respond within 1-2 hours to minimize damage and begin the recovery process.
-              </p>
-              <Link
-                href="/en-AU/contact"
-                className="block w-full text-center bg-primary-600 text-white py-3 px-6 rounded-md hover:bg-primary-700 transition-colors"
+      {/* Services */}
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-6">Our Services in {location.name}</h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {services.map((service) => (
+            <div key={service.id} className="border rounded-lg p-6 shadow-sm">
+              <h3 className="text-xl font-semibold mb-3">{service.title}</h3>
+              <p className="text-gray-600 mb-4">{service.description}</p>
+              <Link 
+                href={`/en-AU/services/${service.slug}/${location.slug}`}
+                className="text-blue-600 hover:text-blue-800 font-medium"
               >
-                Contact Us Now
+                Learn More →
               </Link>
             </div>
-          </div>
+          ))}
         </div>
+      </section>
 
-        {/* Nearby Locations */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6">Nearby Service Areas</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {nearbyLocations.map((nearby) => (
-              <Link
-                key={nearby.slug}
+      {/* Nearby Locations */}
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-6">Nearby Service Areas</h2>
+        <div className="grid md:grid-cols-3 gap-8">
+          {nearbyLocations.map((nearby) => (
+            <div key={nearby.id} className="border rounded-lg p-6 shadow-sm">
+              <h3 className="text-xl font-semibold mb-3">{nearby.name}</h3>
+              <p className="text-gray-600 mb-4">{nearby.description}</p>
+              <Link 
                 href={`/en-AU/locations/${nearby.slug}`}
-                className="p-6 border rounded-lg hover:bg-gray-50 transition-colors"
+                className="text-blue-600 hover:text-blue-800 font-medium"
               >
-                <h3 className="font-semibold mb-2">{nearby.name}</h3>
-                <p className="text-sm text-gray-600">
-                  Also serving {nearby.suburbs?.slice(0, 3).join(', ')}
-                </p>
+                View Services →
               </Link>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
+      </section>
 
-        {/* SEO Content */}
-        <div className="prose prose-lg max-w-none">
-          <h2>Professional Restoration Services in {location.name}</h2>
-          <p>
-            With a population of {location.population?.toLocaleString()}, {location.name} requires
-            reliable and professional emergency restoration services. Our local team is fully equipped
-            and certified to handle all types of disaster recovery situations, from water damage
-            to fire restoration and mould remediation.
-          </p>
-
-          <h3>Why Choose Our {location.name} Services?</h3>
-          <ul>
-            <li>24/7 emergency response</li>
-            <li>Fully equipped local team</li>
-            <li>Certified technicians</li>
-            <li>Coverage across all {location.name} suburbs</li>
-            <li>Direct insurance billing</li>
-            <li>Guaranteed satisfaction</li>
-          </ul>
-        </div>
-      </div>
+      {/* Contact Section */}
+      <section className="bg-gray-50 rounded-lg p-8">
+        <h2 className="text-2xl font-semibold mb-4">Need Emergency Service in {location.name}?</h2>
+        <p className="text-gray-600 mb-6">
+          Our team is available 24/7 for rapid response to all types of property damage emergencies.
+        </p>
+        <Link
+          href="/en-AU/contact"
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 inline-block"
+        >
+          Contact Us Now
+        </Link>
+      </section>
     </div>
   );
-}
-
-export async function generateStaticParams() {
-  return Object.keys(LOCATIONS).map((location) => ({
-    location: location,
-  }));
 }

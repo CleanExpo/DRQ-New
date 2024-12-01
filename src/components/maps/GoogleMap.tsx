@@ -9,16 +9,18 @@ interface GoogleMapProps {
     lng: number;
   };
   zoom?: number;
-  markers?: Array<{
-    position: {
-      lat: number;
-      lng: number;
-    };
-    title?: string;
-  }>;
+  height?: string;
+  className?: string;
 }
 
-export function GoogleMap({ center, zoom = 12, markers = [] }: GoogleMapProps) {
+declare global {
+  interface Window {
+    initMap: () => void;
+    google: typeof google;
+  }
+}
+
+export function GoogleMap({ center, zoom = 12, height = '400px', className = '' }: GoogleMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
 
@@ -47,13 +49,10 @@ export function GoogleMap({ center, zoom = 12, markers = [] }: GoogleMapProps) {
 
       setMapInstance(map);
 
-      // Add markers
-      markers.forEach(marker => {
-        new google.maps.Marker({
-          position: marker.position,
-          map,
-          title: marker.title
-        });
+      // Add marker at center
+      new google.maps.Marker({
+        position: center,
+        map
       });
     };
 
@@ -64,7 +63,7 @@ export function GoogleMap({ center, zoom = 12, markers = [] }: GoogleMapProps) {
       // Google Maps API will call this global function when loaded
       window.initMap = initMap;
     }
-  }, [center, zoom, markers, mapInstance]);
+  }, [center, zoom, mapInstance]);
 
   return (
     <>
@@ -74,16 +73,9 @@ export function GoogleMap({ center, zoom = 12, markers = [] }: GoogleMapProps) {
       />
       <div 
         ref={mapRef}
-        className="w-full h-[400px] rounded-lg shadow-md"
+        className={`w-full shadow-md rounded-lg ${className}`}
+        style={{ height }}
       />
     </>
   );
-}
-
-// Add type declaration for the global initMap function
-declare global {
-  interface Window {
-    initMap: () => void;
-    google: typeof google;
-  }
 }

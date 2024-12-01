@@ -40,14 +40,14 @@
     "env:backup": "npm run backup:env",
     "env:list": "npm run backup:env:list",
     "env:restore": "npm run backup:env:restore",
-    "env:verify": "npm run verify:env",
-    "final-check": "npm run verify:all && npm run env:verify && npm run security"
+    "env:verify": "npm run verify:env"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.0.2",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.10",
+    "@types/google.maps": "^3.54.10",
     "class-variance-authority": "^0.7.0",
     "dotenv": "^16.3.1",
     "mongodb": "^6.3.0",
@@ -55,7 +55,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "debug": "^4.3.4",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "unsplash-js": "^7.0.18"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^14.0.4",
