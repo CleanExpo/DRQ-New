@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev -p 3005",
     "build": "next build",
+    "build:optimize": "node scripts/optimize-build.js",
+    "build:analyze": "ANALYZE=true next build",
     "start": "next start -p 3005",
     "lint": "next lint",
     "pre-deploy": "node scripts/pre-deploy.js",
@@ -24,7 +26,11 @@
     "content:deploy": "npm run backup && npm run update:deploy",
     "verify": "node scripts/verify-setup.js",
     "setup": "npm install && npm run verify",
-    "safe-deploy": "npm run backup:all && npm run pre-deploy && npm run deploy"
+    "safe-deploy": "npm run backup:all && npm run pre-deploy && npm run deploy",
+    "clean": "rm -rf .next node_modules/.cache",
+    "clean:full": "rm -rf .next node_modules && npm install",
+    "type-check": "tsc --noEmit",
+    "analyze": "ANALYZE=true npm run build"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.0.2",
@@ -46,5 +52,9 @@
     "tailwindcss": "^3.3.6",
     "typescript": "^5.3.3",
     "vercel": "^32.6.1"
+  },
+  "devDependencies": {
+    "@next/bundle-analyzer": "^14.0.4",
+    "cross-env": "^7.0.3"
   }
 }
