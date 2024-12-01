@@ -33,13 +33,10 @@ export function LocationsPage({ locations, centerCoordinates }: LocationsPagePro
 
       <div className="h-[600px] mb-8">
         <GoogleMap
-          center={centerCoordinates}
+          latitude={centerCoordinates.latitude}
+          longitude={centerCoordinates.longitude}
           zoom={9}
-          markers={locations.map(location => ({
-            id: location.id,
-            name: location.name,
-            coordinates: location.coordinates
-          }))}
+          height="600px"
         />
       </div>
 

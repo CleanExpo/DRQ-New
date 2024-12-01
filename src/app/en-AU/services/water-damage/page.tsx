@@ -65,6 +65,27 @@ const steps = [
   }
 ];
 
+const otherServices = [
+  {
+    title: "Fire Damage Restoration",
+    description: "Expert fire and smoke damage restoration services",
+    image: "/images/fire-damage.jpg",
+    href: "/en-AU/services/fire-damage"
+  },
+  {
+    title: "Mould Remediation",
+    description: "Professional mould removal and prevention",
+    image: "/images/mould-remediation.jpg",
+    href: "/en-AU/services/mould-remediation"
+  },
+  {
+    title: "Storm Damage Repair",
+    description: "Comprehensive storm damage restoration services",
+    image: "/images/storm-damage.jpg",
+    href: "/en-AU/services/storm-damage"
+  }
+];
+
 export default function WaterDamagePage() {
   return (
     <SchemaProvider
@@ -103,7 +124,7 @@ export default function WaterDamagePage() {
         <ServiceFeatures features={features} />
         <ProcessSteps steps={steps} />
         <FAQ faqs={faqs} />
-        <ServicesOverview />
+        <ServicesOverview title="Other Services" services={otherServices} />
         <NearbyLocations />
       </ServicePage>
     </SchemaProvider>

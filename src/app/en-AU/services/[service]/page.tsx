@@ -48,7 +48,28 @@ const content: ServiceContent = {
   ]
 };
 
-export default function ServicePage({ params }: { params: { service: string } }) {
+const otherServices = [
+  {
+    title: "Fire Damage Restoration",
+    description: "Expert fire and smoke damage restoration services",
+    image: "/images/fire-damage.jpg",
+    href: "/en-AU/services/fire-damage"
+  },
+  {
+    title: "Mould Remediation",
+    description: "Professional mould removal and prevention",
+    image: "/images/mould-remediation.jpg",
+    href: "/en-AU/services/mould-remediation"
+  },
+  {
+    title: "Storm Damage Repair",
+    description: "Comprehensive storm damage restoration services",
+    image: "/images/storm-damage.jpg",
+    href: "/en-AU/services/storm-damage"
+  }
+];
+
+export default function ServiceDetailPage({ params }: { params: { service: string } }) {
   const schema = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -71,7 +92,7 @@ export default function ServicePage({ params }: { params: { service: string } })
         <ServiceFeatures features={content.features} />
         <ProcessSteps steps={content.steps} />
         <FAQ faqs={content.faqs} />
-        <ServicesOverview title="Other Services" />
+        <ServicesOverview title="Other Services" services={otherServices} />
         <NearbyLocations title="Service Areas" />
       </ServicePage>
     </SchemaProvider>

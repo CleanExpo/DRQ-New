@@ -54,15 +54,9 @@ export function LocationPage({ location, coordinates, image }: LocationPageProps
         <div>
           <div className="h-96 rounded-lg overflow-hidden">
             <GoogleMap
-              center={coordinates}
+              latitude={coordinates.latitude}
+              longitude={coordinates.longitude}
               zoom={14}
-              markers={[
-                {
-                  id: location.id,
-                  name: location.name,
-                  coordinates
-                }
-              ]}
             />
           </div>
         </div>
