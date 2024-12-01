@@ -2,6 +2,7 @@
   "name": "drq-website",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev -p 3005",
     "build": "next build",
@@ -46,7 +47,9 @@
     "cache:monitor": "node scripts/refresh-cache.js --monitor",
     "monitor": "node scripts/monitor.js",
     "monitor:status": "node scripts/monitor.js --status",
-    "monitor:health": "node scripts/monitor.js --health"
+    "monitor:health": "node scripts/monitor.js --health",
+    "monitor:watch": "node scripts/monitor.js --watch",
+    "final-check": "npm run verify:all && npm run env:verify && npm run security"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.0.2",

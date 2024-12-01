@@ -1,5 +1,20 @@
-const { monitoring } = require('../src/lib/monitoring');
-const { DEFAULT_THRESHOLDS } = require('../src/types/monitoring');
+#!/usr/bin/env node
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import dotenv from 'dotenv';
+import { MongoClient } from 'mongodb';
+import Redis from 'ioredis';
+
+// Load environment variables
+dotenv.config();
+
+// Get directory name
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Import monitoring modules
+const { monitoring } = await import(join(__dirname, '..', 'src', 'lib', 'monitoring.ts'));
+const { DEFAULT_THRESHOLDS } = await import(join(__dirname, '..', 'src', 'types', 'monitoring.ts'));
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -28,7 +43,6 @@ async function monitorSystem() {
       
       // Check MongoDB
       try {
-        const { MongoClient } = require('mongodb');
         const client = new MongoClient(process.env.MONGODB_URI);
         await client.connect();
         const startTime = Date.now();
@@ -49,7 +63,6 @@ async function monitorSystem() {
       // Check Redis
       if (process.env.REDIS_URL) {
         try {
-          const Redis = require('ioredis');
           const redis = new Redis(process.env.REDIS_URL);
           const startTime = Date.now();
           await redis.ping();
@@ -69,7 +82,6 @@ async function monitorSystem() {
 
       // Check cache
       try {
-        const { MongoClient } = require('mongodb');
         const client = new MongoClient(process.env.MONGODB_URI);
         await client.connect();
         const db = client.db();
