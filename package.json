@@ -25,7 +25,9 @@
     "content:update": "npm run backup && npm run dev",
     "content:deploy": "npm run backup && npm run update:deploy",
     "verify": "node scripts/verify-setup.js",
-    "setup": "npm install && npm run verify",
+    "verify:env": "node scripts/verify-env.js",
+    "verify:all": "npm run verify && npm run verify:env",
+    "setup": "npm install && npm run verify:all",
     "safe-deploy": "npm run backup:all && npm run pre-deploy && npm run deploy",
     "clean": "rimraf .next node_modules/.cache",
     "clean:full": "rimraf .next node_modules && npm install",
@@ -37,7 +39,8 @@
     "env:staging": "node scripts/switch-env.js staging",
     "env:backup": "npm run backup:env",
     "env:list": "npm run backup:env:list",
-    "env:restore": "npm run backup:env:restore"
+    "env:restore": "npm run backup:env:restore",
+    "env:verify": "npm run verify:env"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.0.2",
@@ -45,6 +48,7 @@
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.10",
     "class-variance-authority": "^0.7.0",
+    "dotenv": "^16.3.1",
     "mongodb": "^6.3.0",
     "next": "^14.0.4",
     "react": "^18.2.0",
