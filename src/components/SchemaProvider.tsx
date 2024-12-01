@@ -1,16 +1,18 @@
-import React from 'react';
+import { ReactNode } from 'react';
 
-interface SchemaProviderProps {
-  schemas: object[];
+export interface SchemaProviderProps {
+  schema: Record<string, any>;
+  children: ReactNode;
 }
 
-export function SchemaProvider({ schemas }: SchemaProviderProps) {
+export function SchemaProvider({ schema, children }: SchemaProviderProps) {
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify(schemas)
-      }}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      {children}
+    </>
   );
 }

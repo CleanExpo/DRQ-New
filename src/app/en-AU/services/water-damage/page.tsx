@@ -1,179 +1,111 @@
-import React from 'react';
-import type { Metadata } from 'next';
-import { ServiceAreas } from '@/components/shared/ServiceAreas';
-import { Hero } from '@/components/shared/Hero';
-import { CallToAction } from '@/components/shared/CallToAction';
+import { Metadata } from 'next';
+import { ServicePage } from '@/components/templates/ServicePage';
+import { ServiceFeatures } from '@/components/shared/ServiceFeatures';
+import { NearbyLocations } from '@/components/shared/NearbyLocations';
 import { ProcessSteps } from '@/components/shared/ProcessSteps';
 import { ServicesOverview } from '@/components/shared/ServicesOverview';
-import { FAQ, FAQItem } from '@/components/shared/FAQ';
+import { FAQ, type FAQItem } from '@/components/shared/FAQ';
 import { SchemaProvider } from '@/components/SchemaProvider';
 
 export const metadata: Metadata = {
-  title: 'Water Damage Restoration Services Brisbane | DRQ',
-  description: 'Professional water damage restoration services available 24/7. Expert water extraction, structural drying, and property restoration in Brisbane and surrounding areas.',
-}
+  title: 'Water Damage Restoration Services | Disaster Recovery QLD',
+  description: 'Professional water damage restoration services in Queensland. 24/7 emergency response for flood damage, burst pipes, and water extraction. Call now for immediate help.',
+};
 
-const services = [
+const faqs: FAQItem[] = [
   {
-    title: "Flood Damage Cleanup",
-    description: "Professional flood water removal and property restoration services"
+    question: "How quickly can you respond to water damage emergencies?",
+    answer: "We provide 24/7 emergency response and aim to arrive within 1-2 hours of your call in most service areas."
   },
   {
-    title: "Burst Pipe Repairs",
-    description: "Emergency response for burst pipes and water leaks"
+    question: "What should I do while waiting for your team to arrive?",
+    answer: "If safe, turn off the water source, remove valuable items from wet areas, and start removing excess water. Don't enter areas with electrical hazards."
   },
   {
-    title: "Storm Damage",
-    description: "Comprehensive storm and water damage restoration"
+    question: "How long does water damage restoration take?",
+    answer: "The timeline varies depending on the extent of damage, typically 3-5 days for drying and basic restoration, longer for extensive repairs."
+  }
+];
+
+const features = [
+  {
+    title: "24/7 Emergency Response",
+    description: "Immediate assistance when you need it most"
   },
   {
-    title: "Structural Drying",
-    description: "Professional grade equipment for thorough structural drying"
+    title: "Advanced Water Extraction",
+    description: "Professional grade equipment for efficient water removal"
   },
   {
-    title: "Moisture Detection",
-    description: "Advanced technology to detect hidden moisture and prevent mould"
+    title: "Complete Drying Solutions",
+    description: "Industrial dehumidifiers and air movers"
   },
   {
-    title: "Content Restoration",
-    description: "Salvage and restore water-damaged belongings"
+    title: "Mould Prevention",
+    description: "Treatments to prevent future mould growth"
   }
 ];
 
 const steps = [
   {
-    step: "1",
-    title: "Emergency Response",
-    description: "24/7 rapid response to minimize water damage"
+    title: "Emergency Contact",
+    description: "Call our 24/7 hotline for immediate response"
   },
   {
-    step: "2",
-    title: "Assessment",
-    description: "Thorough inspection and damage assessment"
+    title: "Inspection",
+    description: "Thorough assessment of water damage"
   },
   {
-    step: "3",
-    title: "Water Removal",
-    description: "Professional water extraction and drying"
+    title: "Water Extraction",
+    description: "Remove standing water and begin drying"
   },
   {
-    step: "4",
-    title: "Restoration",
-    description: "Complete property restoration and repairs"
-  }
-];
-
-const faqs: FAQItem[] = [
-  {
-    question: "How quickly can you respond to water damage emergencies?",
-    answer: "We provide 24/7 emergency response with typical arrival times of 1-2 hours in the Brisbane area."
-  },
-  {
-    question: "What areas do you service for water damage restoration?",
-    answer: "We service Brisbane, Gold Coast, Ipswich, Logan, and surrounding areas in South East Queensland."
-  },
-  {
-    question: "Do you work with insurance companies?",
-    answer: "Yes, we work directly with all major insurance companies and can assist with your claim process."
-  },
-  {
-    question: "How long does water damage restoration take?",
-    answer: "The timeline varies depending on damage severity, typically 3-5 days for standard water damage and up to 2 weeks for severe cases."
+    title: "Drying & Monitoring",
+    description: "Complete moisture removal and documentation"
   }
 ];
 
 export default function WaterDamagePage() {
-  const breadcrumbs = [
-    { name: 'Home', url: '/' },
-    { name: 'Services', url: '/services' },
-    { name: 'Water Damage', url: '/en-AU/services/water-damage' }
-  ];
-
   return (
-    <>
-      <SchemaProvider 
-        schemas={[
-          {
-            "@context": "https://schema.org",
-            "@type": "Service",
-            "name": "Water Damage Restoration",
-            "provider": {
-              "@type": "LocalBusiness",
-              "name": "Disaster Recovery Queensland"
-            },
-            "areaServed": "Brisbane and South East Queensland",
-            "description": "Professional water damage restoration services available 24/7"
-          },
-          {
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            "itemListElement": breadcrumbs.map((item, index) => ({
-              "@type": "ListItem",
-              "position": index + 1,
-              "name": item.name,
-              "item": `https://disasterrecoveryqld.au${item.url}`
-            }))
-          },
-          {
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            "mainEntity": faqs.map(faq => ({
-              "@type": "Question",
-              "name": faq.question,
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": faq.answer
-              }
-            }))
+    <SchemaProvider
+      schema={{
+        "@context": "https://schema.org",
+        "@type": "Service",
+        name: "Water Damage Restoration",
+        provider: {
+          "@type": "LocalBusiness",
+          name: "Disaster Recovery QLD",
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: "Brisbane",
+            addressRegion: "QLD",
+            addressCountry: "AU"
           }
-        ]} 
-      />
-      <div className="flex flex-col gap-12 py-8">
-        {/* Hero Section */}
-        <Hero 
-          title="Professional Water Damage Restoration"
-          description="24/7 emergency water damage restoration services for residential and commercial properties"
-          primaryButton={{
-            text: "Get Emergency Help",
-            href: "/en-AU/contact"
-          }}
-          secondaryButton={{
-            text: "Contact Us",
-            href: "/en-AU/contact"
-          }}
-        />
-
-        {/* Services Overview */}
-        <ServicesOverview 
-          title="Our Water Damage Services"
-          services={services}
-        />
-
-        {/* Process Section */}
-        <ProcessSteps 
-          title="Our Restoration Process"
-          steps={steps}
-        />
-
-        {/* FAQ Section */}
-        <FAQ 
-          title="Common Questions About Water Damage"
-          faqs={faqs}
-        />
-
-        {/* Call to Action */}
-        <CallToAction 
-          title="Need Emergency Water Damage Services?"
-          description="Our team is available 24/7 for emergency response across South East Queensland"
-          buttonText="Contact Us Now"
-          buttonHref="/en-AU/contact"
-          showPhoneNumber={true}
-          isDark={true}
-        />
-
-        {/* Service Areas */}
-        <ServiceAreas />
-      </div>
-    </>
+        },
+        areaServed: {
+          "@type": "State",
+          name: "Queensland"
+        },
+        description: "Professional water damage restoration services including flood cleanup, water extraction, and structural drying.",
+        availableChannel: {
+          "@type": "ServiceChannel",
+          serviceUrl: "https://disasterrecoveryqld.au/services/water-damage",
+          servicePhone: "1300 309 361"
+        }
+      }}
+    >
+      <ServicePage
+        title="Water Damage Restoration"
+        description="Professional water damage restoration services for homes and businesses. Fast response, expert team, and guaranteed results."
+        image="/images/water-damage-restoration.jpg"
+        imageAlt="Water damage restoration equipment in action"
+      >
+        <ServiceFeatures features={features} />
+        <ProcessSteps steps={steps} />
+        <FAQ faqs={faqs} />
+        <ServicesOverview />
+        <NearbyLocations />
+      </ServicePage>
+    </SchemaProvider>
   );
 }
