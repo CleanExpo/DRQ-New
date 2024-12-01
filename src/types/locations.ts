@@ -1,81 +1,115 @@
+export interface LocationImage {
+  url: string;
+  alt: string;
+  width: number;
+  height: number;
+}
+
+export interface LocationAddress {
+  streetAddress: string;
+  suburb: string;
+  state: string;
+  postcode: string;
+  country: string;
+}
+
+export interface NearbyLocation {
+  name: string;
+  url: string;
+  description: string;
+}
+
 export interface Location {
   id: string;
   name: string;
   slug: string;
   description: string;
-  image?: string;
-  address: {
-    streetAddress: string;
-    suburb: string;
-    state: string;
-    postcode: string;
-    country: string;
-  };
-  coordinates: {
-    latitude: number;
-    longitude: number;
-  };
+  address: LocationAddress;
   services: string[];
-  nearbyLocations?: {
-    name: string;
-    url: string;
-    description: string;
-  }[];
+  nearbyLocations?: NearbyLocation[];
 }
 
-export interface LocationImage {
-  url: string;
-  width: number;
-  height: number;
-  alt: string;
-  blurDataURL?: string;
-}
+export const mainOffice: Location = {
+  id: 'wacol',
+  name: 'Wacol (Main Office)',
+  slug: 'wacol',
+  description: 'Our main office and operations center, serving all of Southeast Queensland.',
+  address: {
+    streetAddress: '17 Tile St',
+    suburb: 'Wacol',
+    state: 'QLD',
+    postcode: '4076',
+    country: 'AU'
+  },
+  services: [
+    'water-damage',
+    'mould-remediation',
+    'sewage-cleanup',
+    'storm-damage',
+    'fire-damage',
+    'crime-scene-cleaning'
+  ]
+};
 
-export interface LocationContent {
-  title: string;
-  description: string;
-  metaTitle?: string;
-  metaDescription?: string;
-  image?: LocationImage;
-  location: Location;
-  nearbyLocations?: {
-    name: string;
-    url: string;
-    description: string;
-  }[];
-  schema?: {
-    service: {
-      "@type": string;
-      name: string;
-      description: string;
-      provider: {
-        "@type": string;
-        name: string;
-        address: {
-          "@type": string;
-          streetAddress: string;
-          addressLocality: string;
-          addressRegion: string;
-          postalCode: string;
-          addressCountry: string;
-        };
-      };
-      areaServed: {
-        "@type": string;
-        name: string;
-        address: {
-          "@type": string;
-          addressLocality: string;
-          addressRegion: string;
-          postalCode: string;
-          addressCountry: string;
-        };
-        geo: {
-          "@type": string;
-          latitude: number;
-          longitude: number;
-        };
-      };
-    };
-  };
-}
+export const serviceLocations: Location[] = [
+  {
+    id: 'brisbane-cbd',
+    name: 'Brisbane CBD',
+    slug: 'brisbane-cbd',
+    description: 'Serving Brisbane CBD and inner city areas with 24/7 emergency response.',
+    address: {
+      streetAddress: '',
+      suburb: 'Brisbane City',
+      state: 'QLD',
+      postcode: '4000',
+      country: 'AU'
+    },
+    services: [
+      'water-damage',
+      'mould-remediation',
+      'sewage-cleanup',
+      'storm-damage',
+      'fire-damage',
+      'crime-scene-cleaning'
+    ]
+  },
+  {
+    id: 'gold-coast',
+    name: 'Gold Coast',
+    slug: 'gold-coast',
+    description: 'Emergency restoration services for the Gold Coast region.',
+    address: {
+      streetAddress: '',
+      suburb: 'Gold Coast',
+      state: 'QLD',
+      postcode: '4217',
+      country: 'AU'
+    },
+    services: [
+      'water-damage',
+      'mould-remediation',
+      'sewage-cleanup',
+      'storm-damage',
+      'fire-damage'
+    ]
+  },
+  {
+    id: 'ipswich',
+    name: 'Ipswich',
+    slug: 'ipswich',
+    description: 'Serving Ipswich and surrounding areas with comprehensive restoration services.',
+    address: {
+      streetAddress: '',
+      suburb: 'Ipswich',
+      state: 'QLD',
+      postcode: '4305',
+      country: 'AU'
+    },
+    services: [
+      'water-damage',
+      'mould-remediation',
+      'storm-damage',
+      'fire-damage'
+    ]
+  }
+];
