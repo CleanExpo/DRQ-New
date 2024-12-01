@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-export interface SchemaProviderProps {
+interface SchemaProviderProps {
   schema: Record<string, any>;
   children: ReactNode;
 }
@@ -10,7 +10,9 @@ export function SchemaProvider({ schema, children }: SchemaProviderProps) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(schema)
+        }}
       />
       {children}
     </>
