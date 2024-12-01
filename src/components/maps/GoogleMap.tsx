@@ -15,17 +15,20 @@ export function GoogleMap({ latitude, longitude, zoom = 14, height = '400px' }: 
   const scriptLoaded = useRef(false);
 
   useEffect(() => {
-    if (!mapRef.current || !window.google || !scriptLoaded.current) return;
+    // Skip if map element or Google Maps is not loaded
+    if (!mapRef.current || !(window as any).google || !scriptLoaded.current) return;
 
     const location = { lat: latitude, lng: longitude };
-    const mapOptions: google.maps.MapOptions = {
+    const mapOptions = {
       center: location,
       zoom,
     };
 
-    const map = new google.maps.Map(mapRef.current, mapOptions);
+    // Create map instance
+    const map = new (window as any).google.maps.Map(mapRef.current, mapOptions);
 
-    new google.maps.Marker({
+    // Add marker
+    new (window as any).google.maps.Marker({
       map,
       position: location,
     });
