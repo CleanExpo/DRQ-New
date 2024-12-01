@@ -1,179 +1,58 @@
 import { useEffect, useRef } from 'react';
 
-interface Coordinates {
-  latitude: number;
-  longitude: number;
-}
-
-interface Marker {
-  id: string;
-  name: string;
-  coordinates: Coordinates;
-}
-
 interface GoogleMapProps {
-  center: Coordinates;
+  address: string;
   zoom?: number;
-  markers?: Marker[];
+  height?: string;
 }
 
-export function GoogleMap({ center, zoom = 12, markers = [] }: GoogleMapProps) {
+export function GoogleMap({ address, zoom = 14, height = '400px' }: GoogleMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<google.maps.Marker[]>([]);
 
   useEffect(() => {
-    // Load Google Maps script
-    if (!window.google) {
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
-      script.async = true;
-      script.defer = true;
-      document.head.appendChild(script);
+    // Load the Google Maps script
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
 
-      script.onload = initializeMap;
-    } else {
-      initializeMap();
-    }
+    script.onload = () => {
+      if (!mapRef.current) return;
+
+      // Initialize the map
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ address }, (results, status) => {
+        if (status === 'OK' && results && results[0]) {
+          const map = new google.maps.Map(mapRef.current, {
+            center: results[0].geometry.location,
+            zoom,
+          });
+
+          // Add a marker
+          new google.maps.Marker({
+            map,
+            position: results[0].geometry.location,
+          });
+        }
+      });
+    };
 
     return () => {
-      // Clean up markers
-      markersRef.current.forEach(marker => marker.setMap(null));
-      markersRef.current = [];
+      // Cleanup
+      document.head.removeChild(script);
     };
-  }, []);
-
-  useEffect(() => {
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.setCenter({
-        lat: center.latitude,
-        lng: center.longitude
-      });
-    }
-  }, [center]);
-
-  useEffect(() => {
-    if (mapInstanceRef.current) {
-      // Clear existing markers
-      markersRef.current.forEach(marker => marker.setMap(null));
-      markersRef.current = [];
-
-      // Add new markers
-      markers.forEach(marker => {
-        const mapMarker = new google.maps.Marker({
-          position: {
-            lat: marker.coordinates.latitude,
-            lng: marker.coordinates.longitude
-          },
-          map: mapInstanceRef.current!,
-          title: marker.name
-        });
-
-        markersRef.current.push(mapMarker);
-      });
-    }
-  }, [markers]);
-
-  function initializeMap() {
-    if (!mapRef.current || mapInstanceRef.current) return;
-
-    mapInstanceRef.current = new google.maps.Map(mapRef.current, {
-      center: {
-        lat: center.latitude,
-        lng: center.longitude
-      },
-      zoom,
-      styles: [
-        {
-          featureType: 'water',
-          elementType: 'geometry',
-          stylers: [{ color: '#e9e9e9' }, { lightness: 17 }]
-        },
-        {
-          featureType: 'landscape',
-          elementType: 'geometry',
-          stylers: [{ color: '#f5f5f5' }, { lightness: 20 }]
-        },
-        {
-          featureType: 'road.highway',
-          elementType: 'geometry.fill',
-          stylers: [{ color: '#ffffff' }, { lightness: 17 }]
-        },
-        {
-          featureType: 'road.highway',
-          elementType: 'geometry.stroke',
-          stylers: [{ color: '#ffffff' }, { lightness: 29 }, { weight: 0.2 }]
-        },
-        {
-          featureType: 'road.arterial',
-          elementType: 'geometry',
-          stylers: [{ color: '#ffffff' }, { lightness: 18 }]
-        },
-        {
-          featureType: 'road.local',
-          elementType: 'geometry',
-          stylers: [{ color: '#ffffff' }, { lightness: 16 }]
-        },
-        {
-          featureType: 'poi',
-          elementType: 'geometry',
-          stylers: [{ color: '#f5f5f5' }, { lightness: 21 }]
-        },
-        {
-          featureType: 'poi.park',
-          elementType: 'geometry',
-          stylers: [{ color: '#dedede' }, { lightness: 21 }]
-        },
-        {
-          elementType: 'labels.text.stroke',
-          stylers: [{ visibility: 'on' }, { color: '#ffffff' }, { lightness: 16 }]
-        },
-        {
-          elementType: 'labels.text.fill',
-          stylers: [{ saturation: 36 }, { color: '#333333' }, { lightness: 40 }]
-        },
-        {
-          elementType: 'labels.icon',
-          stylers: [{ visibility: 'off' }]
-        },
-        {
-          featureType: 'transit',
-          elementType: 'geometry',
-          stylers: [{ color: '#f2f2f2' }, { lightness: 19 }]
-        },
-        {
-          featureType: 'administrative',
-          elementType: 'geometry.fill',
-          stylers: [{ color: '#fefefe' }, { lightness: 20 }]
-        },
-        {
-          featureType: 'administrative',
-          elementType: 'geometry.stroke',
-          stylers: [{ color: '#fefefe' }, { lightness: 17 }, { weight: 1.2 }]
-        }
-      ]
-    });
-
-    // Add initial markers
-    markers.forEach(marker => {
-      const mapMarker = new google.maps.Marker({
-        position: {
-          lat: marker.coordinates.latitude,
-          lng: marker.coordinates.longitude
-        },
-        map: mapInstanceRef.current!,
-        title: marker.name
-      });
-
-      markersRef.current.push(mapMarker);
-    });
-  }
+  }, [address, zoom]);
 
   return (
-    <div
-      ref={mapRef}
-      className="w-full h-full rounded-lg overflow-hidden"
-      style={{ minHeight: '400px' }}
+    <div 
+      ref={mapRef} 
+      style={{ 
+        width: '100%', 
+        height,
+        borderRadius: '0.5rem',
+        overflow: 'hidden'
+      }}
     />
   );
 }

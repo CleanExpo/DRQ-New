@@ -1,58 +1,29 @@
-'use client';
-
-import React, { useState } from 'react';
-
-export interface FAQItem {
+interface FAQItem {
   question: string;
   answer: string;
 }
 
 interface FAQProps {
-  title: string;
   faqs: FAQItem[];
+  title?: string;
 }
 
-export function FAQ({ title, faqs }: FAQProps) {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-  const toggleFAQ = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
+export function FAQ({ faqs, title = "Frequently Asked Questions" }: FAQProps) {
+  if (!faqs || faqs.length === 0) return null;
 
   return (
-    <section className="section">
-      <div className="container">
-        <h2 className="heading-2 text-center mb-12">
-          {title}
-        </h2>
-        <div className="max-w-3xl mx-auto">
-          {faqs.map((faq, index) => (
-            <div
-              key={index}
-              className="mb-4 border rounded-lg overflow-hidden"
-            >
-              <button
-                className="w-full text-left p-4 bg-white hover:bg-gray-50 transition-colors flex justify-between items-center"
-                onClick={() => toggleFAQ(index)}
-              >
-                <span className="font-semibold">{faq.question}</span>
-                <span className={`transform transition-transform ${openIndex === index ? 'rotate-180' : ''}`}>
-                  ▼
-                </span>
-              </button>
-              <div
-                className={`
-                  overflow-hidden transition-all duration-300
-                  ${openIndex === index ? 'max-h-96' : 'max-h-0'}
-                `}
-              >
-                <div className="p-4 bg-gray-50">
-                  <p className="text-gray-600">{faq.answer}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+    <section className="my-8">
+      <h2 className="text-2xl font-bold mb-6">{title}</h2>
+      <div className="space-y-6">
+        {faqs.map((faq, index) => (
+          <div
+            key={index}
+            className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
+          >
+            <h3 className="text-xl font-bold mb-2">{faq.question}</h3>
+            <p className="text-gray-600">{faq.answer}</p>
+          </div>
+        ))}
       </div>
     </section>
   );

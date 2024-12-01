@@ -10,11 +10,13 @@ interface NearbyLocationsProps {
 }
 
 export function NearbyLocations({ locations, service }: NearbyLocationsProps) {
+  if (!locations || locations.length === 0) return null;
+
   return (
     <section className="my-8">
       <h2 className="text-2xl font-bold mb-6">Nearby Locations</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {locations.map(location => (
+        {locations.map((location) => (
           <a
             key={location.url}
             href={service ? `${location.url}/${service}` : location.url}
