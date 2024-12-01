@@ -4,8 +4,39 @@ const fs = require('fs');
 console.log('🚀 Running pre-deployment checks...\n');
 
 try {
-  // 1. Check for uncommitted changes
-  console.log('📋 Checking git status...');
+  // 1. Security Checks
+  console.log('🔒 Running security checks...');
+  try {
+    execSync('npm audit', { stdio: 'inherit' });
+    console.log('✅ Security audit passed');
+  } catch (securityError) {
+    console.error('❌ Security vulnerabilities found!');
+    const proceed = require('readline').createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+    
+    proceed.question('Security vulnerabilities found. Continue anyway? (y/N) ', answer => {
+      if (answer.toLowerCase() !== 'y') {
+        console.log('Deployment cancelled.');
+        process.exit(1);
+      }
+      proceed.close();
+    });
+  }
+
+  // 2. Type Checking
+  console.log('\n📝 Running type checks...');
+  try {
+    execSync('npm run type-check', { stdio: 'inherit' });
+    console.log('✅ Type checking passed');
+  } catch (typeError) {
+    console.error('❌ Type checking failed:', typeError.message);
+    process.exit(1);
+  }
+
+  // 3. Check for uncommitted changes
+  console.log('\n📋 Checking git status...');
   const status = execSync('git status --porcelain').toString();
   if (status) {
     console.error('❌ You have uncommitted changes. Please commit or stash them first.');
@@ -13,7 +44,7 @@ try {
   }
   console.log('✅ Git working directory clean');
 
-  // 2. Try to pull latest changes (but don't fail if remote is not accessible)
+  // 4. Try to pull latest changes
   console.log('\n📥 Attempting to pull latest changes...');
   try {
     execSync('git pull origin main');
@@ -23,19 +54,26 @@ try {
     console.warn('   If you need to sync with remote, please resolve any Git issues first.');
   }
 
-  // 3. Run verification
-  console.log('\n🔍 Running setup verification...');
-  try {
-    execSync('npm run verify', { stdio: 'inherit' });
-  } catch (verifyError) {
-    console.error('❌ Verification failed. Please fix the issues before deploying.');
+  // 5. Environment Check
+  console.log('\n🔐 Checking environment variables...');
+  const requiredEnvVars = [
+    'NEXT_PUBLIC_API_URL',
+    'NEXT_PUBLIC_SITE_URL',
+    'MONGODB_URI'
+  ];
+
+  const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+  if (missingVars.length > 0) {
+    console.error('❌ Missing required environment variables:', missingVars.join(', '));
+    console.log('Please check your .env.development or .env.production file.');
     process.exit(1);
   }
+  console.log('✅ Environment variables verified');
 
-  // 4. Create backup
+  // 6. Create backup
   console.log('\n💾 Creating backup...');
   try {
-    execSync('npm run backup', { stdio: 'inherit' });
+    execSync('npm run backup:all', { stdio: 'inherit' });
   } catch (backupError) {
     console.error('❌ Backup failed:', backupError.message);
     const proceed = require('readline').createInterface({
@@ -52,7 +90,7 @@ try {
     });
   }
 
-  // 5. Run build
+  // 7. Run build
   console.log('\n🏗️ Building project...');
   try {
     execSync('npm run build', { stdio: 'inherit' });
@@ -61,7 +99,7 @@ try {
     process.exit(1);
   }
 
-  // 6. Run tests if they exist
+  // 8. Run tests if they exist
   if (fs.existsSync('src/tests')) {
     console.log('\n🧪 Running tests...');
     try {
@@ -71,22 +109,6 @@ try {
       process.exit(1);
     }
   }
-
-  // 7. Check environment variables
-  console.log('\n🔐 Checking environment variables...');
-  const requiredEnvVars = [
-    'NEXT_PUBLIC_API_URL',
-    'NEXT_PUBLIC_SITE_URL',
-    'MONGODB_URI'
-  ];
-
-  const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
-  if (missingVars.length > 0) {
-    console.error('❌ Missing required environment variables:', missingVars.join(', '));
-    console.log('Please check your .env.development or .env.production file.');
-    process.exit(1);
-  }
-  console.log('✅ Environment variables verified');
 
   console.log('\n✨ Pre-deployment checks completed successfully!');
   console.log('\nNext steps:');
