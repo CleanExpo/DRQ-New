@@ -1,41 +1,37 @@
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { SERVICE_CONTENT } from '@/config/content';
-import { generateServiceMetadata } from '@/lib/metadata';
-import ServicePage from '@/components/templates/ServicePage';
+import { ServicePage } from '@/components/templates/ServicePage';
+import { getServiceContent } from '@/lib/services';
+import { getServiceImage } from '@/lib/images';
 
-interface ServicePageProps {
-  params: {
-    service: string;
-  };
+interface ServicePageParams {
+  service: string;
 }
 
-export async function generateMetadata({ params }: ServicePageProps): Promise<Metadata> {
-  const serviceKey = params.service.toUpperCase().replace(/-/g, '_') as keyof typeof SERVICE_CONTENT;
-  const serviceContent = SERVICE_CONTENT[serviceKey];
-  
-  if (!serviceContent) return {};
-  
+export async function generateMetadata({ params }: { params: ServicePageParams }): Promise<Metadata> {
+  const serviceContent = getServiceContent(params.service);
+  const image = getServiceImage(params.service);
+
   return {
-    title: serviceContent.metaTitle,
-    description: serviceContent.metaDescription,
+    title: serviceContent.metaTitle || serviceContent.title,
+    description: serviceContent.metaDescription || serviceContent.description,
+    openGraph: {
+      title: serviceContent.metaTitle || serviceContent.title,
+      description: serviceContent.metaDescription || serviceContent.description,
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: serviceContent.title,
+        },
+      ],
+    },
   };
 }
 
-export default function Service({ params }: ServicePageProps) {
-  const serviceKey = params.service.toUpperCase().replace(/-/g, '_') as keyof typeof SERVICE_CONTENT;
-  const serviceContent = SERVICE_CONTENT[serviceKey];
-  
-  if (!serviceContent) {
-    notFound();
-  }
+export default function ServicePageRoute({ params }: { params: ServicePageParams }) {
+  const serviceContent = getServiceContent(params.service);
+  const image = getServiceImage(params.service);
 
-  return <ServicePage service={serviceContent} slug={params.service} />;
-}
-
-// Generate static paths for all services
-export async function generateStaticParams() {
-  return Object.keys(SERVICE_CONTENT).map((service) => ({
-    service: service.toLowerCase().replace(/_/g, '-'),
-  }));
+  return <ServicePage service={{ ...serviceContent, image }} slug={params.service} />;
 }

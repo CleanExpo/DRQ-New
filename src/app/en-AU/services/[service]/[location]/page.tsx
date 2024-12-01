@@ -1,143 +1,101 @@
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { SERVICE_CONTENT } from '@/config/content';
-import { LOCATIONS, getNearbyLocations } from '@/config/locations';
-import ServicePage from '@/components/templates/ServicePage';
-import { getLocationImage } from '@/lib/images';
+import { ServicePage } from '@/components/templates/ServicePage';
+import { getServiceContent } from '@/lib/services';
+import { getLocationBySlug } from '@/lib/locations';
+import { getServiceImage, getLocationImage, generateImageMetadata } from '@/lib/images';
+import { Location, LocationImage } from '@/types/locations';
+import { ServiceContent } from '@/types/services';
 
-interface LocationServicePageProps {
-  params: {
-    service: string;
-    location: string;
-  };
+interface ServiceLocationPageParams {
+  service: string;
+  location: string;
 }
 
-export async function generateMetadata({ params }: LocationServicePageProps): Promise<Metadata> {
-  const serviceKey = params.service.toUpperCase().replace(/-/g, '_') as keyof typeof SERVICE_CONTENT;
-  const serviceContent = SERVICE_CONTENT[serviceKey];
-  const location = LOCATIONS[params.location];
-  
-  if (!serviceContent || !location) return {};
-  
-  const title = `${serviceContent.title} in ${location.name}, ${location.region} | DRQ`;
-  const description = location.metaDescription || 
-    `Professional ${serviceContent.title.toLowerCase()} services in ${location.name}, ${location.region}. 24/7 emergency response for ${location.suburbs?.slice(0, 3).join(', ')} and surrounding areas.`;
-  
+export async function generateMetadata({ params }: { params: ServiceLocationPageParams }): Promise<Metadata> {
+  const serviceContent = getServiceContent(params.service);
+  const location = getLocationBySlug(params.location);
+  const locationImage = location?.image ? generateImageMetadata(location.image, location.name) : null;
+  const serviceImage = getServiceImage(params.service);
+
+  const title = `${serviceContent.title} in ${location?.name || 'Your Area'}`;
+  const description = `Professional ${serviceContent.title.toLowerCase()} services in ${location?.name || 'your area'}. ${serviceContent.description}`;
+
   return {
     title,
     description,
     openGraph: {
       title,
       description,
-      images: [{ url: serviceContent.image || '/images/og-image.jpg' }]
+      images: [
+        {
+          url: locationImage?.url || serviceImage,
+          width: locationImage?.width || 1200,
+          height: locationImage?.height || 630,
+          alt: locationImage?.alt || title,
+        },
+      ],
     },
-    alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/en-AU/services/${params.service}/${params.location}`
-    }
   };
 }
 
-export default async function LocationServicePage({ params }: LocationServicePageProps) {
-  const serviceKey = params.service.toUpperCase().replace(/-/g, '_') as keyof typeof SERVICE_CONTENT;
-  const serviceContent = SERVICE_CONTENT[serviceKey];
-  const location = LOCATIONS[params.location];
-  
-  if (!serviceContent || !location) {
-    notFound();
+export default function ServiceLocationPage({ params }: { params: ServiceLocationPageParams }) {
+  const serviceContent = getServiceContent(params.service);
+  const location = getLocationBySlug(params.location);
+  const locationImage = location?.image ? generateImageMetadata(location.image, location.name) : null;
+  const serviceImage = getServiceImage(params.service);
+
+  if (!location) {
+    return null; // 404 will be handled by Next.js
   }
 
-  // Get location-specific image
-  const locationImage = await getLocationImage(location.name);
+  // Get nearby locations that offer this service
+  const nearbyLocations = location.nearbyLocations?.filter(nearby => 
+    getLocationBySlug(nearby.url.split('/').pop()!)?.services.includes(params.service)
+  ) || [];
 
-  // Get nearby locations for internal linking
-  const nearbyLocations = getNearbyLocations(params.location, 3);
-
-  // Customize content for location
-  const localizedContent = {
-    ...serviceContent,
+  const localizedContent: ServiceContent = {
     title: `${serviceContent.title} in ${location.name}`,
-    description: `Professional ${serviceContent.title.toLowerCase()} services in ${location.name} and surrounding areas including ${location.suburbs?.slice(0, 3).join(', ')}. Available 24/7 for emergency response.`,
-    image: locationImage?.url || serviceContent.image,
-    location: location,
-    nearbyLocations: nearbyLocations.map(nearby => ({
-      name: nearby.name,
-      url: `/en-AU/services/${params.service}/${nearby.slug}`,
-      description: `${serviceContent.title} services also available in ${nearby.name}`
-    })),
+    description: `Professional ${serviceContent.title.toLowerCase()} services in ${location.name}. ${serviceContent.description}`,
+    image: locationImage?.url || serviceImage,
+    features: serviceContent.features,
+    location,
+    nearbyLocations,
     schema: {
-      ...serviceContent.schema,
       service: {
-        ...serviceContent.schema.service,
+        "@type": "Service",
+        name: serviceContent.title,
+        description: `Professional ${serviceContent.title.toLowerCase()} services in ${location.name}`,
+        provider: {
+          "@type": "LocalBusiness",
+          name: "Disaster Recovery Queensland",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: location.address.streetAddress,
+            addressLocality: location.address.suburb,
+            addressRegion: location.address.state,
+            postalCode: location.address.postcode,
+            addressCountry: location.address.country,
+          },
+        },
         areaServed: {
           "@type": "City",
           name: location.name,
           address: {
             "@type": "PostalAddress",
-            addressRegion: location.state,
-            postalCode: location.postcode,
-            addressCountry: "AU"
+            addressLocality: location.address.suburb,
+            addressRegion: location.address.state,
+            postalCode: location.address.postcode,
+            addressCountry: location.address.country,
           },
           geo: {
             "@type": "GeoCoordinates",
-            latitude: location.coordinates.lat,
-            longitude: location.coordinates.lng
-          }
-        },
-        serviceArea: {
-          "@type": "GeoCircle",
-          geoMidpoint: {
-            "@type": "GeoCoordinates",
-            latitude: location.coordinates.lat,
-            longitude: location.coordinates.lng
+            latitude: location.coordinates.latitude,
+            longitude: location.coordinates.longitude,
           },
-          geoRadius: "50000"
-        }
+        },
       },
-      localBusiness: {
-        "@type": "LocalBusiness",
-        name: "Disaster Recovery Queensland",
-        image: locationImage?.url || serviceContent.image,
-        address: {
-          "@type": "PostalAddress",
-          addressLocality: location.name,
-          addressRegion: location.state,
-          postalCode: location.postcode,
-          addressCountry: "AU"
-        },
-        geo: {
-          "@type": "GeoCoordinates",
-          latitude: location.coordinates.lat,
-          longitude: location.coordinates.lng
-        },
-        url: `${process.env.NEXT_PUBLIC_SITE_URL}/en-AU/services/${params.service}/${params.location}`,
-        telephone: "+61-1300-000-000",
-        priceRange: "$$",
-        areaServed: location.suburbs?.map(suburb => ({
-          "@type": "City",
-          name: suburb
-        }))
-      }
-    }
+    },
   };
 
-  return <ServicePage 
-    service={localizedContent} 
-    slug={`${params.service}/${params.location}`}
-  />;
-}
-
-// Generate static paths for all service-location combinations
-export async function generateStaticParams() {
-  const paths: { service: string; location: string; }[] = [];
-  
-  Object.keys(SERVICE_CONTENT).forEach(service => {
-    Object.keys(LOCATIONS).forEach(location => {
-      paths.push({
-        service: service.toLowerCase().replace(/_/g, '-'),
-        location: location
-      });
-    });
-  });
-  
-  return paths;
+  return <ServicePage service={localizedContent} slug={params.service} />;
 }
