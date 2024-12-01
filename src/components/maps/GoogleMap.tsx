@@ -4,43 +4,32 @@ import { useEffect, useRef } from 'react';
 import Script from 'next/script';
 
 interface GoogleMapProps {
-  address: string;
+  latitude: number;
+  longitude: number;
   zoom?: number;
   height?: string;
 }
 
-export function GoogleMap({ address, zoom = 14, height = '400px' }: GoogleMapProps) {
+export function GoogleMap({ latitude, longitude, zoom = 14, height = '400px' }: GoogleMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const scriptLoaded = useRef(false);
 
   useEffect(() => {
     if (!mapRef.current || !window.google || !scriptLoaded.current) return;
 
-    // Initialize the map
-    const geocoder = new google.maps.Geocoder();
-    const geocoderRequest: google.maps.GeocoderRequest = {
-      address
+    const location = { lat: latitude, lng: longitude };
+    const mapOptions: google.maps.MapOptions = {
+      center: location,
+      zoom,
     };
 
-    geocoder.geocode(geocoderRequest, (results, status) => {
-      if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
-        const mapOptions: google.maps.MapOptions = {
-          center: results[0].geometry.location,
-          zoom,
-        };
+    const map = new google.maps.Map(mapRef.current, mapOptions);
 
-        const map = new google.maps.Map(mapRef.current!, mapOptions);
-
-        // Add a marker
-        const markerOptions: google.maps.MarkerOptions = {
-          map,
-          position: results[0].geometry.location,
-        };
-
-        new google.maps.Marker(markerOptions);
-      }
+    new google.maps.Marker({
+      map,
+      position: location,
     });
-  }, [address, zoom, scriptLoaded.current]);
+  }, [latitude, longitude, zoom, scriptLoaded.current]);
 
   const handleScriptLoad = () => {
     scriptLoaded.current = true;
@@ -49,7 +38,7 @@ export function GoogleMap({ address, zoom = 14, height = '400px' }: GoogleMapPro
   return (
     <>
       <Script
-        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
         onLoad={handleScriptLoad}
         strategy="lazyOnload"
       />
