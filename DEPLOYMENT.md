@@ -1,143 +1,188 @@
-# Deployment Checklist
+# Deployment Guide
 
-## Pre-Deployment Security Checks
+## Environment Setup
 
-1. Environment Variables
-   - [ ] Run `npm run backup-env` to backup current environment files
-   - [ ] Verify all sensitive values are properly set in production environment
-   - [ ] Ensure no development keys are present in production environment
-   - [ ] Verify all API keys are production versions
+### Production Environment
+```bash
+# Switch to production environment
+npm run env:prod
 
-2. Security Configurations
-   - [ ] Check JWT_SECRET is properly set and secure
-   - [ ] Verify ENCRYPTION_KEY is properly set
-   - [ ] Confirm all API endpoints use HTTPS
-   - [ ] Verify CSP headers are configured correctly
+# Deploy to production
+npm run safe-deploy
+```
 
-3. Database & Cache
-   - [ ] Verify MongoDB connection string is production instance
-   - [ ] Confirm Redis configuration is production setup
-   - [ ] Check database access permissions
-   - [ ] Verify database backups are configured
-
-4. Monitoring Setup
-   - [ ] Configure Sentry error tracking
-   - [ ] Set up New Relic monitoring
-   - [ ] Enable LogRocket session recording
-   - [ ] Verify Google Analytics tracking
-
-## Deployment Steps
-
-1. Repository Preparation
-   ```bash
-   # Run all pre-deployment checks
-   npm run pre-deploy
-
-   # Backup environment files
-   npm run backup-env
-
-   # Build the application
-   npm run build
-   ```
-
-2. Environment Configuration
-   ```bash
-   # Set up production environment
-   cp .env.production .env
-
-   # Verify environment variables
-   node scripts/verify-env.js
-   ```
-
-3. Performance Optimization
-   - [ ] Run Lighthouse audit
-   - [ ] Check Core Web Vitals
-   - [ ] Verify image optimization
-   - [ ] Check bundle size analysis
-
-4. SEO Verification
-   - [ ] Verify sitemap.xml is generated
-   - [ ] Check robots.txt configuration
-   - [ ] Confirm meta tags are correct
-   - [ ] Verify schema markup
-
-## Post-Deployment Checks
-
-1. Functionality
-   - [ ] Test all service pages
-   - [ ] Verify location-specific content
-   - [ ] Check contact forms
-   - [ ] Test emergency response features
-
-2. Performance
-   - [ ] Run performance monitoring
-   - [ ] Check page load times
-   - [ ] Verify CDN configuration
-   - [ ] Test mobile responsiveness
-
-3. Security
-   - [ ] Run security scan
-   - [ ] Check SSL configuration
-   - [ ] Verify access controls
-   - [ ] Test rate limiting
-
-4. Monitoring
-   - [ ] Verify error tracking
-   - [ ] Check analytics setup
-   - [ ] Test logging system
-   - [ ] Monitor server resources
-
-## Production URLs
-
-- Main Site: https://www.disasterrecoveryqld.au
+Production URLs:
+- Main site: https://disasterrecoveryqld.au
 - API: https://api.disasterrecoveryqld.au
-- Admin Dashboard: https://admin.disasterrecoveryqld.au
 
-## Emergency Contacts
+### Staging Environment
+```bash
+# Switch to staging environment
+npm run env:staging
 
-- Technical Support: support@disasterrecoveryqld.au
-- Emergency Line: 1300 309 361
+# Deploy to staging
+npm run safe-deploy
+```
 
-## Rollback Procedure
+Staging URLs:
+- Main site: https://staging.disasterrecoveryqld.au
+- API: https://staging-api.disasterrecoveryqld.au
 
-1. Access previous deployment
-   ```bash
-   # Get deployment history
-   npm run deployment:list
+### Development Environment
+```bash
+# Switch to development environment
+npm run env:dev
 
-   # Rollback to previous version
-   npm run deployment:rollback
-   ```
+# Start development server
+npm run dev
+```
 
-2. Restore environment backup
-   ```bash
-   # List available backups
-   npm run backup-env -- --restore
+Development URLs:
+- Main site: https://dev.disasterrecoveryqld.au
+- API: https://dev-api.disasterrecoveryqld.au
 
-   # Restore specific backup
-   npm run backup-env -- --restore --timestamp <backup-timestamp>
-   ```
+## Deployment Process
 
-## Security Policies
+1. Pre-deployment Checks
+   - Environment verification
+   - Code linting
+   - Type checking
+   - Security audit
+
+2. Backup Creation
+   - Environment backup
+   - Content backup
+   - Database backup
+
+3. Build Process
+   - Next.js production build
+   - Asset optimization
+   - Cache generation
+
+4. Deployment
+   - Vercel deployment
+   - DNS configuration
+   - SSL certificate verification
+
+5. Post-deployment Verification
+   - Health checks
+   - Monitoring setup
+   - Performance validation
+
+## Monitoring
+
+### Health Checks
+```bash
+# Check system status
+npm run monitor:status
+
+# Run health check
+npm run monitor:health
+
+# Watch system metrics
+npm run monitor:watch
+```
+
+### Cache Management
+```bash
+# Refresh cache
+npm run cache:refresh
+
+# Check cache status
+npm run cache:status
+
+# Monitor cache
+npm run cache:monitor
+```
+
+## Rollback Process
+
+If deployment fails:
+```bash
+# Restore environment
+npm run env:restore
+
+# Restore content
+npm run backup:restore
+
+# Verify restoration
+npm run verify:all
+```
+
+## Security Measures
 
 1. Environment Variables
-   - Never commit .env files to repository
-   - Use encrypted backups for sensitive data
-   - Rotate secrets regularly
+   - Sensitive data encrypted
+   - Different keys per environment
+   - Regular rotation schedule
 
-2. Access Control
-   - Use principle of least privilege
-   - Regular access review
-   - Monitor suspicious activities
+2. API Security
+   - JWT authentication
+   - Rate limiting
+   - CORS configuration
 
-3. Data Protection
-   - Regular backups
-   - Encrypt sensitive data
-   - Monitor data access
+3. Monitoring
+   - Error tracking (Sentry)
+   - Performance monitoring (New Relic)
+   - User session recording (LogRocket)
 
-4. Incident Response
-   - Document all incidents
-   - Follow response procedure
-   - Regular security updates
+## Database Management
 
-Remember to update this checklist as new requirements are added to the deployment process.
+1. MongoDB Atlas
+   - Production database
+   - Staging database
+   - Development database
+
+2. Redis Cache
+   - Session management
+   - API caching
+   - Rate limiting
+
+## Content Delivery
+
+1. Image Optimization
+   - Automatic WebP conversion
+   - Responsive sizes
+   - Lazy loading
+
+2. Static Assets
+   - CDN distribution
+   - Cache control
+   - Compression
+
+## Troubleshooting
+
+### Common Issues
+
+1. Build Failures
+   ```bash
+   # Clean build cache
+   npm run clean
+   
+   # Full reinstall
+   npm run clean:full
+   ```
+
+2. Environment Issues
+   ```bash
+   # Verify environment
+   npm run verify:env
+   
+   # List backups
+   npm run env:list
+   ```
+
+3. Cache Issues
+   ```bash
+   # Clear cache
+   npm run cache:refresh --clear
+   
+   # Rebuild cache
+   npm run cache:refresh --rebuild
+   ```
+
+### Support Contacts
+
+- Technical Support: admin@disasterrecoveryqld.au
+- Emergency Contact: 1300 309 361
+- Hours: 24/7 365 Emergency Services
