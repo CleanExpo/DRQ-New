@@ -8,26 +8,40 @@ git clone git@github.com:CleanExpo/DRQ-New.git
 cd DRQ-New
 ```
 
-2. Install dependencies:
+2. Install and verify setup:
 ```bash
-npm install
+npm run setup
 ```
 
-## Making Quick Updates
+## Safe Deployment Process
 
-### 1. Content Updates (Safest)
+### 1. Pre-deployment Check
+```bash
+npm run pre-deploy
+```
+This will:
+- Check for uncommitted changes
+- Pull latest changes
+- Verify setup
+- Create backup
+- Build project
+- Check environment variables
+
+### 2. Making Updates
+
+#### Content Updates (Safest)
 ```bash
 npm run content:update
 # Make your changes
 npm run content:deploy
 ```
 
-### 2. Direct Updates
+#### Direct Updates
 ```bash
 npm run update:deploy
 ```
 
-### 3. Preview Before Deploying
+#### Preview Before Deploying
 ```bash
 npm run preview
 ```
@@ -46,6 +60,26 @@ npm run preview
 1. Edit `src/components/shared/ServiceAreas.tsx`
 2. Run `npm run content:deploy`
 
+## Deployment Commands
+
+### Safe Deployment (Recommended)
+```bash
+npm run safe-deploy
+```
+Runs all checks and safeguards before deployment
+
+### Quick Deployment
+```bash
+npm run deploy
+```
+Basic deployment with minimal checks
+
+### Environment-Specific Deployment
+```bash
+npm run deploy:staging  # Deploy to staging
+npm run deploy:prod    # Deploy to production
+```
+
 ## Safety Features
 
 ### Create Backup
@@ -58,6 +92,11 @@ npm run backup
 npm run backup:restore YYYY-MM-DD
 ```
 
+### Verify Setup
+```bash
+npm run verify
+```
+
 ## Need More Details?
 
 - See `CONTENT-UPDATES.md` for detailed content update instructions
@@ -66,12 +105,12 @@ npm run backup:restore YYYY-MM-DD
 
 ## Quick Commands Reference
 
-- `npm run dev` - Start development server
-- `npm run preview` - Preview changes locally
+- `npm run pre-deploy` - Run pre-deployment checks
+- `npm run safe-deploy` - Full safe deployment process
 - `npm run content:update` - Start content update session
 - `npm run content:deploy` - Deploy content changes
 - `npm run backup` - Create content backup
-- `npm run deploy` - Deploy to production
-- `npm run deploy:staging` - Deploy to staging
+- `npm run verify` - Verify setup
+- `npm run preview` - Preview changes locally
 
-Remember: Always preview changes locally before deploying!
+Remember: Always run `npm run pre-deploy` before deploying to ensure everything is ready!

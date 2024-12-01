@@ -7,9 +7,10 @@
     "build": "next build",
     "start": "next start -p 3005",
     "lint": "next lint",
-    "deploy": "node scripts/deploy.js",
-    "deploy:staging": "vercel",
-    "deploy:prod": "vercel --prod",
+    "pre-deploy": "node scripts/pre-deploy.js",
+    "deploy": "npm run pre-deploy && node scripts/deploy.js",
+    "deploy:staging": "npm run pre-deploy && vercel",
+    "deploy:prod": "npm run pre-deploy && vercel --prod",
     "update": "git pull && npm install",
     "update:deploy": "npm run update && npm run deploy",
     "preview": "npm run build && npm run start",
@@ -18,7 +19,8 @@
     "content:update": "npm run backup && npm run dev",
     "content:deploy": "npm run backup && npm run update:deploy",
     "verify": "node scripts/verify-setup.js",
-    "setup": "npm install && npm run verify"
+    "setup": "npm install && npm run verify",
+    "safe-deploy": "npm run pre-deploy && npm run deploy"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.0.2",
