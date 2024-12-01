@@ -1,158 +1,99 @@
-#!/usr/bin/env node
+const https = require('https');
+const fs = require('fs');
 const path = require('path');
-const dotenv = require('dotenv');
-const { MongoClient } = require('mongodb');
-const Redis = require('ioredis');
 
-// Load environment variables
-dotenv.config();
-
-// Parse command line arguments
-const args = process.argv.slice(2);
-const showStatus = args.includes('--status');
-const checkHealth = args.includes('--health');
-const watchMode = args.includes('--watch');
-
-// Import monitoring modules
-const monitoring = require('../src/lib/monitoring');
-
-// Default thresholds
-const DEFAULT_THRESHOLDS = {
-  cache: {
-    refreshDuration: 60000,  // 1 minute
-    errorRate: 0.05,         // 5%
-    maxSize: 1000000000      // 1GB
-  },
-  api: {
-    responseTime: 5000,      // 5 seconds
-    errorRate: 0.01          // 1%
-  },
-  database: {
-    queryTime: 1000,         // 1 second
-    connectionTime: 5000     // 5 seconds
+// Configuration
+const config = {
+  sitemap: 'https://disasterrecoveryqld.au/sitemap.xml',
+  checkInterval: 5 * 60 * 1000, // 5 minutes
+  timeout: 10000, // 10 seconds
+  logFile: path.join(__dirname, '../logs/monitoring.log'),
+  alertThresholds: {
+    responseTime: 2000, // 2 seconds
+    errorRate: 0.05, // 5%
   }
 };
 
-async function monitorSystem() {
-  console.log('🔍 Starting system monitoring...\n');
+// Ensure logs directory exists
+const logsDir = path.join(__dirname, '../logs');
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir);
+}
 
-  try {
-    // Initialize monitoring
-    monitoring.init();
-
-    // Health check
-    if (checkHealth) {
-      console.log('Running health check...');
-      const healthy = await monitoring.healthCheck();
-      console.log(healthy ? '✅ System is healthy' : '❌ System is unhealthy');
-      if (!healthy && !watchMode) process.exit(1);
-    }
-
-    // Status report
-    if (showStatus) {
-      console.log('\nGenerating status report...');
+// Monitor a single URL
+async function checkUrl(url) {
+  return new Promise((resolve) => {
+    const startTime = Date.now();
+    
+    const request = https.get(url, {
+      timeout: config.timeout
+    }, (response) => {
+      const endTime = Date.now();
+      const responseTime = endTime - startTime;
       
-      // Check MongoDB
-      try {
-        const client = new MongoClient(process.env.MONGODB_URI);
-        await client.connect();
-        const startTime = Date.now();
-        await client.db().command({ ping: 1 });
-        const latency = Date.now() - startTime;
-        console.log('✅ MongoDB:', {
-          status: 'connected',
-          latency: `${latency}ms`
-        });
-        await client.close();
-      } catch (error) {
-        console.error('❌ MongoDB:', {
-          status: 'error',
-          message: error.message
-        });
-      }
-
-      // Check Redis
-      if (process.env.REDIS_URL) {
-        try {
-          const redis = new Redis(process.env.REDIS_URL);
-          const startTime = Date.now();
-          await redis.ping();
-          const latency = Date.now() - startTime;
-          console.log('✅ Redis:', {
-            status: 'connected',
-            latency: `${latency}ms`
-          });
-          await redis.quit();
-        } catch (error) {
-          console.error('❌ Redis:', {
-            status: 'error',
-            message: error.message
-          });
-        }
-      }
-
-      // Check cache
-      try {
-        const client = new MongoClient(process.env.MONGODB_URI);
-        await client.connect();
-        const db = client.db();
-        
-        // Get cache collection info
-        const cacheCollection = db.collection('cache');
-        const cacheCount = await cacheCollection.countDocuments();
-        const lastRefresh = await cacheCollection.findOne(
-          {},
-          { 
-            sort: { cacheRefreshedAt: -1 },
-            projection: { cacheRefreshedAt: 1 }
-          }
-        );
-
-        // Get database stats
-        const dbStats = await db.stats();
-        const cacheSize = Math.round(dbStats.dataSize / 1024 / 1024);
-
-        console.log('📦 Cache:', {
-          size: `${cacheSize}MB`,
-          documents: cacheCount,
-          lastRefresh: lastRefresh?.cacheRefreshedAt || 'Never'
-        });
-        await client.close();
-      } catch (error) {
-        console.error('❌ Cache:', {
-          status: 'error',
-          message: error.message
-        });
-      }
-
-      // Performance thresholds
-      console.log('\n⚡ Performance Thresholds:');
-      Object.entries(DEFAULT_THRESHOLDS).forEach(([category, thresholds]) => {
-        console.log(`\n${category.toUpperCase()}:`);
-        Object.entries(thresholds).forEach(([metric, threshold]) => {
-          console.log(`  ${metric}: ${threshold}ms`);
-        });
+      resolve({
+        url,
+        status: response.statusCode,
+        responseTime,
+        timestamp: new Date().toISOString()
       });
-    }
+    });
 
-    // Watch mode
-    if (watchMode) {
-      console.log('\n👀 Watching system metrics...');
-      const interval = 60000; // 1 minute
-      setInterval(async () => {
-        const healthy = await monitoring.healthCheck();
-        const timestamp = new Date().toISOString();
-        console.log(`\n[${timestamp}] Health check:`, healthy ? '✅' : '❌');
-      }, interval);
-    } else {
-      process.exit(0);
-    }
+    request.on('error', (error) => {
+      resolve({
+        url,
+        status: 'error',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    });
+  });
+}
 
-  } catch (error) {
-    console.error('❌ Monitoring failed:', error);
-    process.exit(1);
+// Log results
+function logResult(result) {
+  const logEntry = `${result.timestamp} - ${result.url} - Status: ${result.status}${
+    result.responseTime ? ` - Response Time: ${result.responseTime}ms` : ''
+  }${result.error ? ` - Error: ${result.error}` : ''}\n`;
+
+  fs.appendFile(config.logFile, logEntry, (err) => {
+    if (err) console.error('Error writing to log file:', err);
+  });
+
+  // Alert on issues
+  if (result.status !== 200 || (result.responseTime && result.responseTime > config.alertThresholds.responseTime)) {
+    console.error(`⚠️ Alert: Issue detected with ${result.url}`);
+    // Here you could add additional alerting (email, SMS, etc.)
   }
 }
 
-// Run monitoring
-monitorSystem();
+// Main monitoring function
+async function monitor() {
+  try {
+    const result = await checkUrl(config.sitemap);
+    logResult(result);
+
+    // Schedule next check
+    setTimeout(monitor, config.checkInterval);
+  } catch (error) {
+    console.error('Monitoring error:', error);
+    // Retry after a short delay if there's an error
+    setTimeout(monitor, 60000);
+  }
+}
+
+// Start monitoring
+console.log('🔍 Starting site monitoring...');
+monitor();
+
+// Handle script termination
+process.on('SIGINT', () => {
+  console.log('\n👋 Stopping monitoring...');
+  process.exit();
+});
+
+// Export for potential programmatic usage
+module.exports = {
+  checkUrl,
+  monitor
+};

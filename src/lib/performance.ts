@@ -1,147 +1,96 @@
-interface PerformanceMetric {
-  id: string;
-  name: string;
-  value: number;
-  timestamp: number;
+import { trackPerformance } from './monitoring';
+
+// Web Vitals metrics
+export function reportWebVitals(metric: any) {
+  const { id, name, label, value } = metric;
+
+  // Core Web Vitals
+  if (name === 'FCP') {
+    trackPerformance('First Contentful Paint', value);
+  }
+  if (name === 'LCP') {
+    trackPerformance('Largest Contentful Paint', value);
+  }
+  if (name === 'CLS') {
+    trackPerformance('Cumulative Layout Shift', value);
+  }
+  if (name === 'FID') {
+    trackPerformance('First Input Delay', value);
+  }
+  if (name === 'TTFB') {
+    trackPerformance('Time to First Byte', value);
+  }
+
+  // Custom metrics
+  if (label === 'custom') {
+    trackPerformance(name, value);
+  }
 }
 
-interface PerformanceEvent {
-  id: string;
-  name: string;
-  startTime: number;
-  duration: number;
-  timestamp: number;
+// Custom performance tracking
+export function trackPageLoad() {
+  if (typeof window !== 'undefined') {
+    // Navigation Timing API
+    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+    if (navigation) {
+      trackPerformance('DOM Complete', navigation.domComplete);
+      trackPerformance('DOM Interactive', navigation.domInteractive);
+      trackPerformance('Load Event', navigation.loadEventEnd);
+    }
+
+    // Resource Timing API
+    const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
+    const imageResources = resources.filter(resource => resource.initiatorType === 'img');
+    if (imageResources.length > 0) {
+      const totalImageLoadTime = imageResources.reduce((total, resource) => total + resource.duration, 0);
+      trackPerformance('Total Image Load Time', totalImageLoadTime);
+    }
+  }
+}
+
+// Memory usage tracking
+export function trackMemoryUsage() {
+  if (typeof window !== 'undefined' && (performance as any).memory) {
+    const memory = (performance as any).memory;
+    trackPerformance('Used JS Heap Size', memory.usedJSHeapSize / 1048576); // Convert to MB
+    trackPerformance('Total JS Heap Size', memory.totalJSHeapSize / 1048576);
+  }
+}
+
+// Network request tracking
+export async function trackNetworkRequest(url: string, startTime: number) {
+  const endTime = performance.now();
+  const duration = endTime - startTime;
+  trackPerformance(`API Request: ${url}`, duration);
 }
 
 // Initialize performance monitoring
 export function initPerformanceMonitoring() {
-  if (typeof window === 'undefined') return;
-
-  // Create a PerformanceObserver to monitor long tasks
-  const longTaskObserver = new PerformanceObserver((list) => {
-    list.getEntries().forEach((entry) => {
-      reportPerformanceMetric({
-        name: 'long-task',
-        value: entry.duration,
-        timestamp: entry.startTime,
-        id: `lt-${Date.now()}`
-      });
-    });
-  });
-
-  // Create a PerformanceObserver for First Input Delay
-  const fidObserver = new PerformanceObserver((list) => {
-    list.getEntries().forEach((entry) => {
-      const event = entry as PerformanceEventTiming;
-      reportPerformanceEvent({
-        name: 'first-input-delay',
-        startTime: event.startTime,
-        duration: event.duration,
-        timestamp: Date.now(),
-        id: `fid-${Date.now()}`
-      });
-    });
-  });
-
-  try {
-    // Start observing long tasks
-    longTaskObserver.observe({ entryTypes: ['longtask'] });
-    // Start observing FID
-    fidObserver.observe({ entryTypes: ['first-input'] });
-  } catch (error) {
-    console.error('Performance monitoring initialization failed:', error);
-  }
-}
-
-// Report a performance metric
-export function reportPerformanceMetric(metric: PerformanceMetric) {
-  try {
-    // Get existing metrics from localStorage
-    const metrics = JSON.parse(localStorage.getItem('performance_metrics') || '[]');
-    
-    // Add new metric
-    metrics.push({
-      ...metric,
-      timestamp: metric.timestamp || Date.now()
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
+    // Track initial page load
+    window.addEventListener('load', () => {
+      trackPageLoad();
+      trackMemoryUsage();
     });
 
-    // Store updated metrics
-    localStorage.setItem('performance_metrics', JSON.stringify(metrics));
-
-    // Send metric to analytics if available
-    if (window.gtag) {
-      window.gtag('event', 'performance_metric', {
-        metric_name: metric.name,
-        metric_value: metric.value,
-        metric_id: metric.id
+    // Track subsequent navigations
+    if ('PerformanceObserver' in window) {
+      const navigationObserver = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.entryType === 'navigation') {
+            trackPerformance('Navigation Time', entry.duration);
+          }
+        }
       });
+      navigationObserver.observe({ entryTypes: ['navigation'] });
+
+      // Track long tasks
+      const longTaskObserver = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          trackPerformance('Long Task Duration', entry.duration);
+        }
+      });
+      longTaskObserver.observe({ entryTypes: ['longtask'] });
     }
-  } catch (error) {
-    console.error('Failed to report performance metric:', error);
-  }
-}
-
-// Report a performance event
-export function reportPerformanceEvent(event: PerformanceEvent) {
-  try {
-    // Get existing events from localStorage
-    const events = JSON.parse(localStorage.getItem('performance_events') || '[]');
-    
-    // Add new event
-    events.push({
-      ...event,
-      timestamp: event.timestamp || Date.now()
-    });
-
-    // Store updated events
-    localStorage.setItem('performance_events', JSON.stringify(events));
-
-    // Send event to analytics if available
-    if (window.gtag) {
-      window.gtag('event', 'performance_event', {
-        event_name: event.name,
-        event_duration: event.duration,
-        event_id: event.id
-      });
-    }
-  } catch (error) {
-    console.error('Failed to report performance event:', error);
-  }
-}
-
-// Get all performance metrics
-export function getPerformanceMetrics(): PerformanceMetric[] {
-  try {
-    return JSON.parse(localStorage.getItem('performance_metrics') || '[]');
-  } catch (error) {
-    console.error('Failed to get performance metrics:', error);
-    return [];
-  }
-}
-
-// Get all performance events
-export function getPerformanceEvents(): PerformanceEvent[] {
-  try {
-    return JSON.parse(localStorage.getItem('performance_events') || '[]');
-  } catch (error) {
-    console.error('Failed to get performance events:', error);
-    return [];
-  }
-}
-
-// Clear all performance data
-export function clearPerformanceData() {
-  try {
-    localStorage.removeItem('performance_metrics');
-    localStorage.removeItem('performance_events');
-  } catch (error) {
-    console.error('Failed to clear performance data:', error);
-  }
-}
-
-// Declare global gtag function
-declare global {
-  interface Window {
-    gtag: (command: string, action: string, params: any) => void;
   }
 }

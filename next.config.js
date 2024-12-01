@@ -6,12 +6,12 @@ const nextConfig = {
     unoptimized: true
   },
   typescript: {
-    // Temporarily allow build with type errors for deployment
-    ignoreBuildErrors: true
+    // Re-enable strict type checking
+    ignoreBuildErrors: false
   },
   eslint: {
-    // Temporarily allow build with lint errors for deployment
-    ignoreDuringBuilds: true
+    // Re-enable strict linting
+    ignoreDuringBuilds: false
   }
 };
 
