@@ -40,7 +40,10 @@
     "env:backup": "npm run backup:env",
     "env:list": "npm run backup:env:list",
     "env:restore": "npm run backup:env:restore",
-    "env:verify": "npm run verify:env"
+    "env:verify": "npm run verify:env",
+    "cache:refresh": "node scripts/refresh-cache.js",
+    "cache:status": "node scripts/refresh-cache.js --status",
+    "cache:monitor": "node scripts/refresh-cache.js --monitor"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.0.2",
@@ -52,6 +55,7 @@
     "dotenv": "^16.3.1",
     "mongodb": "^6.3.0",
     "next": "^14.0.4",
+    "node-cron": "^3.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "debug": "^4.3.4",
@@ -61,6 +65,7 @@
   "devDependencies": {
     "@next/bundle-analyzer": "^14.0.4",
     "@types/node": "^20.10.4",
+    "@types/node-cron": "^3.0.11",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
     "autoprefixer": "^10.4.16",
