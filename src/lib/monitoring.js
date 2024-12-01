@@ -1,9 +1,7 @@
-const Sentry = require('@sentry/nextjs');
-const { MongoClient } = require('mongodb');
-const Redis = require('ioredis');
+import * as Sentry from '@sentry/nextjs';
 
 // Initialize monitoring
-function initMonitoring() {
+export function initMonitoring() {
   if (process.env.NODE_ENV === 'production') {
     Sentry.init({
       dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
@@ -14,7 +12,7 @@ function initMonitoring() {
 }
 
 // Report error to monitoring system
-async function reportError(error, context) {
+export async function reportError(error, context) {
   console.error('Error:', typeof error === 'string' ? error : error.message);
   
   if (process.env.NODE_ENV === 'production') {
@@ -22,24 +20,10 @@ async function reportError(error, context) {
       extra: context
     });
   }
-
-  // Send to New Relic if configured
-  if (process.env.NEW_RELIC_LICENSE_KEY) {
-    const newrelic = require('newrelic');
-    newrelic.noticeError(error, context);
-  }
-
-  // Log to LogRocket if configured
-  if (process.env.LOGROCKET_APP_ID && typeof window !== 'undefined') {
-    const LogRocket = require('logrocket');
-    LogRocket.captureException(error, {
-      extra: context
-    });
-  }
 }
 
 // Track metric
-async function trackMetric(metric) {
+export async function trackMetric(metric) {
   if (process.env.NODE_ENV === 'production') {
     Sentry.addBreadcrumb({
       category: 'metrics',
@@ -47,17 +31,11 @@ async function trackMetric(metric) {
       level: 'info',
       data: metric
     });
-
-    // Send to New Relic if configured
-    if (process.env.NEW_RELIC_LICENSE_KEY) {
-      const newrelic = require('newrelic');
-      newrelic.recordMetric(metric.name, metric.value);
-    }
   }
 }
 
 // Monitor cache operations
-function monitorCache(operation, duration, success) {
+export function monitorCache(operation, duration, success) {
   trackMetric({
     name: `cache.${operation}`,
     value: duration,
@@ -75,7 +53,7 @@ function monitorCache(operation, duration, success) {
 }
 
 // Send alert
-async function sendAlert(message, level = 'info', context) {
+export async function sendAlert(message, level = 'info', context) {
   // Log locally
   const logMethod = level === 'error' ? console.error : 
                     level === 'warning' ? console.warn : 
@@ -88,34 +66,14 @@ async function sendAlert(message, level = 'info', context) {
     Sentry.addBreadcrumb({
       category: 'alerts',
       message,
-      level,
+      level: level,
       data: context
     });
-
-    // New Relic
-    if (process.env.NEW_RELIC_LICENSE_KEY) {
-      const newrelic = require('newrelic');
-      newrelic.recordCustomEvent('Alert', {
-        message,
-        level,
-        ...context
-      });
-    }
-
-    // LogRocket
-    if (process.env.LOGROCKET_APP_ID && typeof window !== 'undefined') {
-      const LogRocket = require('logrocket');
-      LogRocket.track('Alert', {
-        message,
-        level,
-        ...context
-      });
-    }
   }
 }
 
 // Monitor performance
-function monitorPerformance(name, duration, context) {
+export function monitorPerformance(name, duration, context) {
   trackMetric({
     name: `performance.${name}`,
     value: duration,
@@ -139,9 +97,10 @@ function monitorPerformance(name, duration, context) {
 }
 
 // Health check
-async function performHealthCheck() {
+export async function performHealthCheck() {
   try {
     // Check MongoDB connection
+    const { MongoClient } = await import('mongodb');
     const client = new MongoClient(process.env.MONGODB_URI);
     await client.connect();
     await client.db().command({ ping: 1 });
@@ -149,6 +108,7 @@ async function performHealthCheck() {
 
     // Check Redis if configured
     if (process.env.REDIS_URL) {
+      const { default: Redis } = await import('ioredis');
       const redis = new Redis(process.env.REDIS_URL);
       await redis.ping();
       await redis.quit();
@@ -156,13 +116,13 @@ async function performHealthCheck() {
 
     return true;
   } catch (error) {
-    reportError('Health check failed', { error });
+    await reportError('Health check failed', { error });
     return false;
   }
 }
 
 // Export monitoring interface
-module.exports = {
+export const monitoring = {
   init: initMonitoring,
   error: reportError,
   metric: trackMetric,
