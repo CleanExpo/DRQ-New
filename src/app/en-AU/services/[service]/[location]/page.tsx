@@ -2,8 +2,7 @@ import { Metadata } from 'next';
 import { ServicePage } from '@/components/templates/ServicePage';
 import { getServiceContent } from '@/lib/services';
 import { getLocationBySlug } from '@/lib/locations';
-import { getServiceImage, getLocationImage, generateImageMetadata } from '@/lib/images';
-import { Location, LocationImage } from '@/types/locations';
+import { getServiceImage, getLocationImage } from '@/lib/images';
 import { ServiceContent } from '@/types/services';
 
 interface ServiceLocationPageParams {
@@ -14,11 +13,19 @@ interface ServiceLocationPageParams {
 export async function generateMetadata({ params }: { params: ServiceLocationPageParams }): Promise<Metadata> {
   const serviceContent = getServiceContent(params.service);
   const location = getLocationBySlug(params.location);
-  const locationImage = location?.image ? generateImageMetadata(location.image, location.name) : null;
+
+  if (!serviceContent || !location) {
+    return {
+      title: 'Service Location Not Found',
+      description: 'The requested service location could not be found.'
+    };
+  }
+
+  const locationImage = location.image ? getLocationImage(location) : null;
   const serviceImage = getServiceImage(params.service);
 
-  const title = `${serviceContent.title} in ${location?.name || 'Your Area'}`;
-  const description = `Professional ${serviceContent.title.toLowerCase()} services in ${location?.name || 'your area'}. ${serviceContent.description}`;
+  const title = `${serviceContent.title} in ${location.name}`;
+  const description = `Professional ${serviceContent.title.toLowerCase()} services in ${location.name}. ${serviceContent.description}`;
 
   return {
     title,
@@ -41,17 +48,19 @@ export async function generateMetadata({ params }: { params: ServiceLocationPage
 export default function ServiceLocationPage({ params }: { params: ServiceLocationPageParams }) {
   const serviceContent = getServiceContent(params.service);
   const location = getLocationBySlug(params.location);
-  const locationImage = location?.image ? generateImageMetadata(location.image, location.name) : null;
-  const serviceImage = getServiceImage(params.service);
 
-  if (!location) {
-    return null; // 404 will be handled by Next.js
+  if (!serviceContent || !location) {
+    return null;
   }
 
+  const locationImage = location.image ? getLocationImage(location) : null;
+  const serviceImage = getServiceImage(params.service);
+
   // Get nearby locations that offer this service
-  const nearbyLocations = location.nearbyLocations?.filter(nearby => 
-    getLocationBySlug(nearby.url.split('/').pop()!)?.services.includes(params.service)
-  ) || [];
+  const nearbyLocations = location.nearbyLocations?.filter(nearby => {
+    const nearbyLocation = getLocationBySlug(nearby.url.split('/').pop() || '');
+    return nearbyLocation?.services.includes(params.service);
+  }) || [];
 
   const localizedContent: ServiceContent = {
     title: `${serviceContent.title} in ${location.name}`,

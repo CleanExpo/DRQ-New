@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { ServicePage } from '@/components/templates/ServicePage';
 import { getServiceContent } from '@/lib/services';
 import { getServiceImage } from '@/lib/images';
+import { ServiceContent } from '@/types/services';
 
 interface ServicePageParams {
   service: string;
@@ -9,6 +10,13 @@ interface ServicePageParams {
 
 export async function generateMetadata({ params }: { params: ServicePageParams }): Promise<Metadata> {
   const serviceContent = getServiceContent(params.service);
+  if (!serviceContent) {
+    return {
+      title: 'Service Not Found',
+      description: 'The requested service could not be found.'
+    };
+  }
+
   const image = getServiceImage(params.service);
 
   return {
@@ -31,7 +39,13 @@ export async function generateMetadata({ params }: { params: ServicePageParams }
 
 export default function ServicePageRoute({ params }: { params: ServicePageParams }) {
   const serviceContent = getServiceContent(params.service);
-  const image = getServiceImage(params.service);
+  if (!serviceContent) return null;
 
-  return <ServicePage service={{ ...serviceContent, image }} slug={params.service} />;
+  const image = getServiceImage(params.service);
+  const content: ServiceContent = {
+    ...serviceContent,
+    image
+  };
+
+  return <ServicePage service={content} slug={params.service} />;
 }
