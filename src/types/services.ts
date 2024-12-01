@@ -1,3 +1,5 @@
+import { Location } from './locations';
+
 export interface ServiceContent {
   title: string;
   description: string;
@@ -5,6 +7,12 @@ export interface ServiceContent {
   metaDescription?: string;
   image?: string;
   features: readonly string[];
+  location?: Location;
+  nearbyLocations?: {
+    name: string;
+    url: string;
+    description: string;
+  }[];
   schema?: {
     service: {
       "@type": string;

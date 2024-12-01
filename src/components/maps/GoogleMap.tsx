@@ -1,81 +1,179 @@
-'use client';
+import { useEffect, useRef } from 'react';
 
-import { useEffect, useRef, useState } from 'react';
-import Script from 'next/script';
+interface Coordinates {
+  latitude: number;
+  longitude: number;
+}
+
+interface Marker {
+  id: string;
+  name: string;
+  coordinates: Coordinates;
+}
 
 interface GoogleMapProps {
-  center: {
-    lat: number;
-    lng: number;
-  };
+  center: Coordinates;
   zoom?: number;
-  height?: string;
-  className?: string;
+  markers?: Marker[];
 }
 
-declare global {
-  interface Window {
-    initMap: () => void;
-    google: typeof google;
-  }
-}
-
-export function GoogleMap({ center, zoom = 12, height = '400px', className = '' }: GoogleMapProps) {
+export function GoogleMap({ center, zoom = 12, markers = [] }: GoogleMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
+  const mapInstanceRef = useRef<google.maps.Map | null>(null);
+  const markersRef = useRef<google.maps.Marker[]>([]);
 
   useEffect(() => {
-    if (!mapRef.current || mapInstance) return;
+    // Load Google Maps script
+    if (!window.google) {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
 
-    const initMap = () => {
-      if (!mapRef.current) return;
-
-      const map = new google.maps.Map(mapRef.current, {
-        center,
-        zoom,
-        styles: [
-          {
-            featureType: 'water',
-            elementType: 'geometry',
-            stylers: [{ color: '#e9e9e9' }, { lightness: 17 }]
-          },
-          {
-            featureType: 'landscape',
-            elementType: 'geometry',
-            stylers: [{ color: '#f5f5f5' }, { lightness: 20 }]
-          }
-        ]
-      });
-
-      setMapInstance(map);
-
-      // Add marker at center
-      new google.maps.Marker({
-        position: center,
-        map
-      });
-    };
-
-    // Initialize map when Google Maps API is loaded
-    if (window.google?.maps) {
-      initMap();
+      script.onload = initializeMap;
     } else {
-      // Google Maps API will call this global function when loaded
-      window.initMap = initMap;
+      initializeMap();
     }
-  }, [center, zoom, mapInstance]);
+
+    return () => {
+      // Clean up markers
+      markersRef.current.forEach(marker => marker.setMap(null));
+      markersRef.current = [];
+    };
+  }, []);
+
+  useEffect(() => {
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setCenter({
+        lat: center.latitude,
+        lng: center.longitude
+      });
+    }
+  }, [center]);
+
+  useEffect(() => {
+    if (mapInstanceRef.current) {
+      // Clear existing markers
+      markersRef.current.forEach(marker => marker.setMap(null));
+      markersRef.current = [];
+
+      // Add new markers
+      markers.forEach(marker => {
+        const mapMarker = new google.maps.Marker({
+          position: {
+            lat: marker.coordinates.latitude,
+            lng: marker.coordinates.longitude
+          },
+          map: mapInstanceRef.current!,
+          title: marker.name
+        });
+
+        markersRef.current.push(mapMarker);
+      });
+    }
+  }, [markers]);
+
+  function initializeMap() {
+    if (!mapRef.current || mapInstanceRef.current) return;
+
+    mapInstanceRef.current = new google.maps.Map(mapRef.current, {
+      center: {
+        lat: center.latitude,
+        lng: center.longitude
+      },
+      zoom,
+      styles: [
+        {
+          featureType: 'water',
+          elementType: 'geometry',
+          stylers: [{ color: '#e9e9e9' }, { lightness: 17 }]
+        },
+        {
+          featureType: 'landscape',
+          elementType: 'geometry',
+          stylers: [{ color: '#f5f5f5' }, { lightness: 20 }]
+        },
+        {
+          featureType: 'road.highway',
+          elementType: 'geometry.fill',
+          stylers: [{ color: '#ffffff' }, { lightness: 17 }]
+        },
+        {
+          featureType: 'road.highway',
+          elementType: 'geometry.stroke',
+          stylers: [{ color: '#ffffff' }, { lightness: 29 }, { weight: 0.2 }]
+        },
+        {
+          featureType: 'road.arterial',
+          elementType: 'geometry',
+          stylers: [{ color: '#ffffff' }, { lightness: 18 }]
+        },
+        {
+          featureType: 'road.local',
+          elementType: 'geometry',
+          stylers: [{ color: '#ffffff' }, { lightness: 16 }]
+        },
+        {
+          featureType: 'poi',
+          elementType: 'geometry',
+          stylers: [{ color: '#f5f5f5' }, { lightness: 21 }]
+        },
+        {
+          featureType: 'poi.park',
+          elementType: 'geometry',
+          stylers: [{ color: '#dedede' }, { lightness: 21 }]
+        },
+        {
+          elementType: 'labels.text.stroke',
+          stylers: [{ visibility: 'on' }, { color: '#ffffff' }, { lightness: 16 }]
+        },
+        {
+          elementType: 'labels.text.fill',
+          stylers: [{ saturation: 36 }, { color: '#333333' }, { lightness: 40 }]
+        },
+        {
+          elementType: 'labels.icon',
+          stylers: [{ visibility: 'off' }]
+        },
+        {
+          featureType: 'transit',
+          elementType: 'geometry',
+          stylers: [{ color: '#f2f2f2' }, { lightness: 19 }]
+        },
+        {
+          featureType: 'administrative',
+          elementType: 'geometry.fill',
+          stylers: [{ color: '#fefefe' }, { lightness: 20 }]
+        },
+        {
+          featureType: 'administrative',
+          elementType: 'geometry.stroke',
+          stylers: [{ color: '#fefefe' }, { lightness: 17 }, { weight: 1.2 }]
+        }
+      ]
+    });
+
+    // Add initial markers
+    markers.forEach(marker => {
+      const mapMarker = new google.maps.Marker({
+        position: {
+          lat: marker.coordinates.latitude,
+          lng: marker.coordinates.longitude
+        },
+        map: mapInstanceRef.current!,
+        title: marker.name
+      });
+
+      markersRef.current.push(mapMarker);
+    });
+  }
 
   return (
-    <>
-      <Script
-        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&callback=initMap`}
-        strategy="lazyOnload"
-      />
-      <div 
-        ref={mapRef}
-        className={`w-full shadow-md rounded-lg ${className}`}
-        style={{ height }}
-      />
-    </>
+    <div
+      ref={mapRef}
+      className="w-full h-full rounded-lg overflow-hidden"
+      style={{ minHeight: '400px' }}
+    />
   );
 }
