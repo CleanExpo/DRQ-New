@@ -16,20 +16,19 @@ export function initMonitoring() {
       }
 
       // Initialize Google Analytics if ID is provided
-      if (process.env.NEXT_PUBLIC_GA_ID) {
+      if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_GA_ID) {
         const script = document.createElement('script');
         script.src = `https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`;
         script.async = true;
         document.head.appendChild(script);
 
         window.dataLayer = window.dataLayer || [];
-        const gtag: GtagFunction = function(...args) {
+        const gtag: GtagFunction = (...args) => {
           window.dataLayer.push(args);
         };
         window.gtag = gtag;
-        
-        window.gtag('js', new Date());
-        window.gtag('config', process.env.NEXT_PUBLIC_GA_ID);
+        gtag('js', new Date());
+        gtag('config', process.env.NEXT_PUBLIC_GA_ID);
       }
 
       console.log('✅ Monitoring initialized successfully');
@@ -52,7 +51,7 @@ export function reportError(error: Error) {
 export function trackPerformance(metric: string, value: number) {
   if (process.env.NODE_ENV === 'production') {
     // Report to Google Analytics
-    if (window.gtag && process.env.NEXT_PUBLIC_GA_ID) {
+    if (typeof window !== 'undefined' && window.gtag && process.env.NEXT_PUBLIC_GA_ID) {
       window.gtag('event', 'performance', {
         event_category: 'Performance',
         event_label: metric,
