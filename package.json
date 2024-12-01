@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3005",
+    "dev": "next dev -p 3006",
     "build": "next build",
     "build:optimize": "node scripts/optimize-build.js",
     "build:analyze": "ANALYZE=true next build",
-    "start": "next start -p 3005",
+    "start": "next start -p 3006",
     "lint": "next lint",
     "pre-deploy": "node scripts/pre-deploy.js",
     "deploy": "npm run pre-deploy && node scripts/deploy.js",

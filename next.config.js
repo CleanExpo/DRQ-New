@@ -13,11 +13,28 @@ const nextConfig = {
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
   },
   experimental: {
-    serverActions: true,
     turbotrace: {
       logLevel: 'error',
       memoryLimit: 4096
     }
+  },
+  webpack: (config, { dev, isServer }) => {
+    // Ignore New Relic files in client-side builds
+    if (!isServer) {
+      config.resolve.alias['newrelic'] = false;
+    }
+
+    // Optimize CSS
+    if (!dev && !isServer) {
+      config.optimization.splitChunks.cacheGroups.styles = {
+        name: 'styles',
+        test: /\.(css|scss)$/,
+        chunks: 'all',
+        enforce: true,
+      };
+    }
+
+    return config;
   },
   // Configure headers for security and caching
   async headers() {
@@ -58,20 +75,6 @@ const nextConfig = {
         permanent: true,
       },
     ];
-  },
-  // Configure webpack for optimizations
-  webpack: (config, { dev, isServer }) => {
-    // Optimize CSS
-    if (!dev && !isServer) {
-      config.optimization.splitChunks.cacheGroups.styles = {
-        name: 'styles',
-        test: /\.(css|scss)$/,
-        chunks: 'all',
-        enforce: true,
-      };
-    }
-
-    return config;
   },
 };
 

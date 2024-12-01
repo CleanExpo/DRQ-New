@@ -22,17 +22,25 @@ export async function reportError(error: Error | string, context?: Record<string
     });
 
     // Send to New Relic if configured
-    if (process.env.NEW_RELIC_LICENSE_KEY) {
-      const newrelic = await import('newrelic');
-      newrelic.noticeError(error instanceof Error ? error : new Error(error.toString()), context);
+    if (process.env.NEW_RELIC_LICENSE_KEY && typeof window === 'undefined') {
+      try {
+        const newrelic = await import('newrelic/index.js');
+        newrelic.noticeError(error instanceof Error ? error : new Error(error.toString()), context);
+      } catch (e) {
+        console.error('Failed to load New Relic:', e);
+      }
     }
 
     // Log to LogRocket if configured
     if (process.env.LOGROCKET_APP_ID && typeof window !== 'undefined') {
-      const LogRocket = await import('logrocket');
-      LogRocket.captureException(error instanceof Error ? error : new Error(error.toString()), {
-        extra: context
-      });
+      try {
+        const LogRocket = await import('logrocket');
+        LogRocket.captureException(error instanceof Error ? error : new Error(error.toString()), {
+          extra: context
+        });
+      } catch (e) {
+        console.error('Failed to load LogRocket:', e);
+      }
     }
   }
 }
@@ -48,9 +56,13 @@ export async function trackMetric(metric: MetricPayload) {
     });
 
     // Send to New Relic if configured
-    if (process.env.NEW_RELIC_LICENSE_KEY) {
-      const newrelic = await import('newrelic');
-      newrelic.recordMetric(metric.name, metric.value);
+    if (process.env.NEW_RELIC_LICENSE_KEY && typeof window === 'undefined') {
+      try {
+        const newrelic = await import('newrelic/index.js');
+        newrelic.recordMetric(metric.name, metric.value);
+      } catch (e) {
+        console.error('Failed to load New Relic:', e);
+      }
     }
   }
 }
@@ -92,23 +104,31 @@ export async function sendAlert(message: string, level: AlertLevel = 'info', con
     });
 
     // New Relic
-    if (process.env.NEW_RELIC_LICENSE_KEY) {
-      const newrelic = await import('newrelic');
-      newrelic.recordCustomEvent('Alert', {
-        message,
-        level,
-        ...context
-      });
+    if (process.env.NEW_RELIC_LICENSE_KEY && typeof window === 'undefined') {
+      try {
+        const newrelic = await import('newrelic/index.js');
+        newrelic.recordCustomEvent('Alert', {
+          message,
+          level,
+          ...context
+        });
+      } catch (e) {
+        console.error('Failed to load New Relic:', e);
+      }
     }
 
     // LogRocket
     if (process.env.LOGROCKET_APP_ID && typeof window !== 'undefined') {
-      const LogRocket = await import('logrocket');
-      LogRocket.track('Alert', {
-        message,
-        level,
-        ...context
-      });
+      try {
+        const LogRocket = await import('logrocket');
+        LogRocket.track('Alert', {
+          message,
+          level,
+          ...context
+        });
+      } catch (e) {
+        console.error('Failed to load LogRocket:', e);
+      }
     }
   }
 }
