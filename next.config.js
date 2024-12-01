@@ -2,9 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['localhost'],
+    domains: ['disasterrecoveryqld.au', 'api.disasterrecoveryqld.au'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60,
   },
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
@@ -12,20 +14,10 @@ const nextConfig = {
   },
   experimental: {
     serverActions: true,
-  },
-  // Optimize build output
-  output: 'standalone',
-  // Enable build cache
-  experimental: {
     turbotrace: {
       logLevel: 'error',
       memoryLimit: 4096
     }
-  },
-  // Optimize images
-  images: {
-    formats: ['image/avif', 'image/webp'],
-    minimumCacheTTL: 60,
   },
   // Configure headers for security and caching
   async headers() {

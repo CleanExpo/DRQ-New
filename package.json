@@ -2,7 +2,6 @@
   "name": "drq-website",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "next dev -p 3005",
     "build": "next build",

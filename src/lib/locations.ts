@@ -1,74 +1,73 @@
-import { Location, ServiceArea, Coordinates } from '@/types/locations';
+import { Location } from '../types/locations';
 
 const locations: Location[] = [
   {
     id: 'brisbane',
-    slug: 'brisbane',
     name: 'Brisbane',
-    state: 'QLD',
-    postcode: '4000',
-    description: 'Emergency restoration services throughout Brisbane and surrounding areas.',
-    coordinates: {
-      lat: -27.4698,
-      lng: 153.0251
+    slug: 'brisbane',
+    description: 'Professional restoration services in Brisbane and surrounding areas.',
+    image: '/images/locations/brisbane.jpg',
+    address: {
+      streetAddress: '123 Adelaide Street',
+      suburb: 'Brisbane City',
+      state: 'QLD',
+      postcode: '4000',
+      country: 'Australia'
     },
-    schema: {
-      "@type": "Place",
-      name: "Brisbane",
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "Brisbane",
-        addressRegion: "QLD",
-        postalCode: "4000",
-        addressCountry: "AU"
+    coordinates: {
+      latitude: -27.4698,
+      longitude: 153.0251
+    },
+    services: [
+      'water-damage-restoration',
+      'flood-damage-cleanup',
+      'mould-remediation',
+      'storm-damage-repair',
+      'sewage-cleanup'
+    ],
+    nearbyLocations: [
+      {
+        name: 'Gold Coast',
+        url: '/en-AU/locations/gold-coast',
+        description: 'Serving the Gold Coast area'
       },
-      geo: {
-        "@type": "GeoCoordinates",
-        latitude: -27.4698,
-        longitude: 153.0251
+      {
+        name: 'Sunshine Coast',
+        url: '/en-AU/locations/sunshine-coast',
+        description: 'Serving the Sunshine Coast area'
       }
-    }
+    ]
   },
   {
     id: 'gold-coast',
+    name: 'Gold Coast',
     slug: 'gold-coast',
-    name: 'Gold Coast',
-    state: 'QLD',
-    postcode: '4217',
-    description: '24/7 emergency restoration services for the Gold Coast region.',
-    coordinates: {
-      lat: -28.0167,
-      lng: 153.4000
+    description: 'Emergency restoration services for the Gold Coast region.',
+    image: '/images/locations/gold-coast.jpg',
+    address: {
+      streetAddress: '45 Cavill Avenue',
+      suburb: 'Surfers Paradise',
+      state: 'QLD',
+      postcode: '4217',
+      country: 'Australia'
     },
-    schema: {
-      "@type": "Place",
-      name: "Gold Coast",
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "Gold Coast",
-        addressRegion: "QLD",
-        postalCode: "4217",
-        addressCountry: "AU"
-      },
-      geo: {
-        "@type": "GeoCoordinates",
-        latitude: -28.0167,
-        longitude: 153.4000
+    coordinates: {
+      latitude: -28.0167,
+      longitude: 153.4000
+    },
+    services: [
+      'water-damage-restoration',
+      'flood-damage-cleanup',
+      'mould-remediation',
+      'storm-damage-repair'
+    ],
+    nearbyLocations: [
+      {
+        name: 'Brisbane',
+        url: '/en-AU/locations/brisbane',
+        description: 'Serving the Brisbane area'
       }
-    }
-  }
-];
-
-const serviceAreas: ServiceArea[] = [
-  {
-    name: 'Brisbane',
-    coordinates: { lat: -27.4698, lng: 153.0251 },
-    radius: 50
-  },
-  {
-    name: 'Gold Coast',
-    coordinates: { lat: -28.0167, lng: 153.4000 },
-    radius: 40
+    ]
   }
 ];
 
@@ -76,46 +75,29 @@ export function getLocations(): Location[] {
   return locations;
 }
 
-export function getLocation(slug: string): Location | undefined {
+export function getLocationBySlug(slug: string): Location | undefined {
   return locations.find(location => location.slug === slug);
 }
 
-export function getServiceAreas(): ServiceArea[] {
-  return serviceAreas;
+export function getNearbyLocations(location: Location): Location[] {
+  return location.nearbyLocations
+    ? locations.filter(loc => 
+        location.nearbyLocations?.some(nearby => 
+          nearby.url.includes(loc.slug)
+        )
+      )
+    : [];
 }
 
-export function isInServiceArea(coordinates: Coordinates): boolean {
-  return serviceAreas.some(area => {
-    const distance = calculateDistance(coordinates, area.coordinates);
-    return distance <= area.radius;
-  });
+export function getLocationsByService(service: string): Location[] {
+  return locations.filter(location => 
+    location.services.includes(service)
+  );
 }
 
-// Calculate distance between two points in kilometers
-function calculateDistance(point1: Coordinates, point2: Coordinates): number {
-  const R = 6371; // Earth's radius in kilometers
-  const dLat = toRad(point2.lat - point1.lat);
-  const dLon = toRad(point2.lng - point1.lng);
-  const lat1 = toRad(point1.lat);
-  const lat2 = toRad(point2.lat);
-
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return R * c;
-}
-
-function toRad(degrees: number): number {
-  return degrees * (Math.PI / 180);
-}
-
-export function getNearbyLocations(currentLocation: Location, limit = 3): Location[] {
-  return locations
-    .filter(location => location.id !== currentLocation.id)
-    .map(location => ({
-      ...location,
-      distance: calculateDistance(currentLocation.coordinates, location.coordinates)
-    }))
-    .sort((a, b) => (a as any).distance - (b as any).distance)
-    .slice(0, limit);
+export function getLocationCoordinates(location: Location) {
+  return {
+    latitude: location.coordinates.latitude,
+    longitude: location.coordinates.longitude
+  };
 }
