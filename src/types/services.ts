@@ -4,7 +4,7 @@ export interface ServiceContent {
   metaTitle?: string;
   metaDescription?: string;
   image?: string;
-  features: string[];
+  features: readonly string[];
   schema?: {
     service: {
       "@type": string;
@@ -58,7 +58,7 @@ export interface ServiceData {
   slug: string;
   title: string;
   description: string;
-  features: string[];
+  features: readonly string[];
   image: string;
   locations?: ServiceLocation[];
 }

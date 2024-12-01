@@ -13,32 +13,32 @@ export function initMonitoring() {
 }
 
 // Report error to monitoring system
-export function reportError(error: Error | string, context?: Record<string, any>) {
+export async function reportError(error: Error | string, context?: Record<string, any>) {
   console.error('Error:', typeof error === 'string' ? error : error.message);
   
   if (process.env.NODE_ENV === 'production') {
     Sentry.captureException(error, {
       extra: context
     });
-  }
 
-  // Send to New Relic if configured
-  if (process.env.NEW_RELIC_LICENSE_KEY) {
-    const newrelic = await import('newrelic');
-    newrelic.noticeError(error, context);
-  }
+    // Send to New Relic if configured
+    if (process.env.NEW_RELIC_LICENSE_KEY) {
+      const newrelic = await import('newrelic');
+      newrelic.noticeError(error instanceof Error ? error : new Error(error.toString()), context);
+    }
 
-  // Log to LogRocket if configured
-  if (process.env.LOGROCKET_APP_ID && typeof window !== 'undefined') {
-    const LogRocket = await import('logrocket');
-    LogRocket.captureException(error, {
-      extra: context
-    });
+    // Log to LogRocket if configured
+    if (process.env.LOGROCKET_APP_ID && typeof window !== 'undefined') {
+      const LogRocket = await import('logrocket');
+      LogRocket.captureException(error instanceof Error ? error : new Error(error.toString()), {
+        extra: context
+      });
+    }
   }
 }
 
 // Track metric
-export function trackMetric(metric: MetricPayload) {
+export async function trackMetric(metric: MetricPayload) {
   if (process.env.NODE_ENV === 'production') {
     Sentry.addBreadcrumb({
       category: 'metrics',
@@ -74,7 +74,7 @@ export function monitorCache(operation: string, duration: number, success: boole
 }
 
 // Send alert
-export function sendAlert(message: string, level: AlertLevel = 'info', context?: Record<string, any>) {
+export async function sendAlert(message: string, level: AlertLevel = 'info', context?: Record<string, any>) {
   // Log locally
   const logMethod = level === 'error' ? console.error : 
                     level === 'warning' ? console.warn : 
@@ -157,7 +157,7 @@ export async function performHealthCheck(): Promise<boolean> {
 
     return true;
   } catch (error) {
-    reportError('Health check failed', { error });
+    await reportError('Health check failed', { error });
     return false;
   }
 }

@@ -1,102 +1,85 @@
-import { createApi } from 'unsplash-js';
+import { Location } from './types/locations';
 
-// Initialize the Unsplash API client
-const unsplash = createApi({
-  accessKey: process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY || ''
-});
+export function getServiceImage(service: string): string {
+  const images: Record<string, string> = {
+    'water-damage-restoration': '/images/water-damage-restoration.jpg',
+    'flood-damage-cleanup': '/images/flood-damage-cleanup.jpg',
+    'mould-remediation': '/images/mould-remediation.jpg',
+    'storm-damage-repair': '/images/storm-damage-repair.jpg',
+    'sewage-cleanup': '/images/sewage-cleanup.jpg',
+  };
 
-// Function to get optimized image URL
-export function getImageUrl(path: string): string {
-  // If it's an external URL, return as is
-  if (path.startsWith('http')) {
-    return path;
+  return images[service] || '/images/default-service.jpg';
+}
+
+export function getLocationImage(location: Location): string {
+  // If location has a custom image, use it
+  if (location.image) {
+    return location.image;
   }
 
-  // If it's a local image, add the base URL
-  return `${process.env.NEXT_PUBLIC_SITE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+  // Otherwise, use a default image based on the service type
+  const defaultImages: Record<string, string> = {
+    'water-damage': '/images/water-damage-restoration.jpg',
+    'flood': '/images/flood-damage-cleanup.jpg',
+    'mould': '/images/mould-remediation.jpg',
+    'storm': '/images/storm-damage-repair.jpg',
+    'sewage': '/images/sewage-cleanup.jpg',
+  };
+
+  // Try to match location name with service type
+  const serviceType = Object.keys(defaultImages).find(type => 
+    location.name.toLowerCase().includes(type)
+  );
+
+  return serviceType ? defaultImages[serviceType] : '/images/default-location.jpg';
 }
 
-// Function to get image dimensions
-export async function getImageDimensions(url: string): Promise<{ width: number; height: number }> {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      resolve({
-        width: img.width,
-        height: img.height
-      });
-    };
-    img.src = url;
-  });
-}
-
-// Function to search Unsplash images
-export async function searchImages(query: string, page = 1, perPage = 10) {
-  try {
-    const result = await unsplash.search.getPhotos({
-      query,
-      page,
-      perPage,
-      orientation: 'landscape'
-    });
-
-    if (result.errors) {
-      console.error('Error searching Unsplash:', result.errors[0]);
-      return null;
-    }
-
-    return result.response;
-  } catch (error) {
-    console.error('Error searching Unsplash:', error);
-    return null;
-  }
-}
-
-// Function to get a random image
-export async function getRandomImage(query: string) {
-  try {
-    const result = await unsplash.photos.getRandom({
-      query,
-      orientation: 'landscape'
-    });
-
-    if (result.errors) {
-      console.error('Error getting random image:', result.errors[0]);
-      return null;
-    }
-
-    return result.response;
-  } catch (error) {
-    console.error('Error getting random image:', error);
-    return null;
-  }
-}
-
-// Function to optimize image URL with parameters
-export function optimizeImage(url: string, width?: number, quality = 75): string {
+export function optimizeImage(url: string, width: number = 800): string {
   if (!url) return '';
   
   // If it's already an optimized URL, return as is
-  if (url.includes('?')) return url;
+  if (url.includes('_next/image')) {
+    return url;
+  }
+
+  // If it's an external URL, return as is
+  if (url.startsWith('http')) {
+    return url;
+  }
 
   // Add optimization parameters
-  const params = new URLSearchParams();
-  if (width) params.append('w', width.toString());
-  params.append('q', quality.toString());
-  params.append('auto', 'format');
-
-  return `${url}?${params.toString()}`;
+  return `/_next/image?url=${encodeURIComponent(url)}&w=${width}&q=75`;
 }
 
-// Function to get placeholder blur data URL
-export async function getBlurDataUrl(url: string): Promise<string> {
-  try {
-    const response = await fetch(url);
-    const buffer = await response.arrayBuffer();
-    const base64 = Buffer.from(buffer).toString('base64');
-    return `data:image/jpeg;base64,${base64}`;
-  } catch (error) {
-    console.error('Error generating blur data URL:', error);
-    return '';
-  }
+export function getImageDimensions(url: string): { width: number; height: number } {
+  const dimensions: Record<string, { width: number; height: number }> = {
+    'water-damage-restoration.jpg': { width: 1920, height: 1080 },
+    'flood-damage-cleanup.jpg': { width: 1920, height: 1080 },
+    'mould-remediation.jpg': { width: 1920, height: 1080 },
+    'storm-damage-repair.jpg': { width: 1920, height: 1080 },
+    'sewage-cleanup.jpg': { width: 1920, height: 1080 },
+    'default-service.jpg': { width: 1920, height: 1080 },
+    'default-location.jpg': { width: 1920, height: 1080 },
+  };
+
+  const filename = url.split('/').pop();
+  return filename && dimensions[filename] ? dimensions[filename] : { width: 1920, height: 1080 };
+}
+
+export function generateBlurDataURL(url: string): string {
+  // For now, return a simple blur data URL
+  // In production, this should generate a proper blur hash
+  return 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4eHRoaHSQtJSEkLzYvLy0vLi44QjhAOEA4Qi4tMkYyLk5OUFdQXFxQRktKWExKUk7/2wBDAR';
+}
+
+export function generateImageMetadata(url: string, alt: string) {
+  const { width, height } = getImageDimensions(url);
+  return {
+    url,
+    width,
+    height,
+    alt,
+    blurDataURL: generateBlurDataURL(url),
+  };
 }
