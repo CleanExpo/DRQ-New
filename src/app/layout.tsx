@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import { initMonitoring } from '../lib/monitoring';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -17,15 +16,7 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-  },
-  icons: {
-    icon: '/icon.svg',
-    apple: '/icon-192x192.png',
-  },
-  manifest: '/site.webmanifest',
-  verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
-  },
+  }
 };
 
 export default function RootLayout({
@@ -33,15 +24,10 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Initialize monitoring in production
-  if (process.env.NODE_ENV === 'production') {
-    initMonitoring();
-  }
-
   return (
     <html lang="en-AU">
       <body>
-        <main>{children}</main>
+        {children}
       </body>
     </html>
   );
