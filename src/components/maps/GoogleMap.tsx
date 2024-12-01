@@ -1,76 +1,89 @@
+'use client';
+
 import { useEffect, useRef, useState } from 'react';
 import Script from 'next/script';
 
 interface GoogleMapProps {
-  address: string;
+  center: {
+    lat: number;
+    lng: number;
+  };
   zoom?: number;
-  height?: string;
-  width?: string;
-  className?: string;
+  markers?: Array<{
+    position: {
+      lat: number;
+      lng: number;
+    };
+    title?: string;
+  }>;
 }
 
-export default function GoogleMap({ 
-  address, 
-  zoom = 14, 
-  height = '400px',
-  width = '100%',
-  className = ''
-}: GoogleMapProps) {
+export function GoogleMap({ center, zoom = 12, markers = [] }: GoogleMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const mapKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY;
+  const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
 
   useEffect(() => {
-    if (!isLoaded || !mapRef.current || !mapKey) return;
+    if (!mapRef.current || mapInstance) return;
 
-    // Initialize the map
-    const initMap = async () => {
-      const { Map, Geocoder } = await google.maps.importLibrary("maps") as google.maps.MapsLibrary;
-      const geocoder = new Geocoder();
+    const initMap = () => {
+      if (!mapRef.current) return;
 
-      geocoder.geocode({ address }, (results, status) => {
-        if (status === 'OK' && results?.[0]) {
-          const map = new Map(mapRef.current!, {
-            center: results[0].geometry.location,
-            zoom,
-            mapTypeControl: false,
-            streetViewControl: false,
-            fullscreenControl: false,
-            styles: [
-              {
-                featureType: 'poi',
-                elementType: 'labels',
-                stylers: [{ visibility: 'off' }]
-              }
-            ]
-          });
+      const map = new google.maps.Map(mapRef.current, {
+        center,
+        zoom,
+        styles: [
+          {
+            featureType: 'water',
+            elementType: 'geometry',
+            stylers: [{ color: '#e9e9e9' }, { lightness: 17 }]
+          },
+          {
+            featureType: 'landscape',
+            elementType: 'geometry',
+            stylers: [{ color: '#f5f5f5' }, { lightness: 20 }]
+          }
+        ]
+      });
 
-          new google.maps.Marker({
-            map,
-            position: results[0].geometry.location
-          });
-        }
+      setMapInstance(map);
+
+      // Add markers
+      markers.forEach(marker => {
+        new google.maps.Marker({
+          position: marker.position,
+          map,
+          title: marker.title
+        });
       });
     };
 
-    initMap();
-  }, [address, isLoaded, zoom, mapKey]);
-
-  if (!mapKey) return null;
+    // Initialize map when Google Maps API is loaded
+    if (window.google?.maps) {
+      initMap();
+    } else {
+      // Google Maps API will call this global function when loaded
+      window.initMap = initMap;
+    }
+  }, [center, zoom, markers, mapInstance]);
 
   return (
     <>
       <Script
-        src={`https://maps.googleapis.com/maps/api/js?key=${mapKey}&libraries=maps&callback=Function.prototype`}
-        onLoad={() => setIsLoaded(true)}
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&callback=initMap`}
         strategy="lazyOnload"
       />
       <div 
         ref={mapRef}
-        style={{ height, width }}
-        className={`rounded-lg shadow-lg ${className}`}
-        aria-label={`Map showing location of ${address}`}
+        className="w-full h-[400px] rounded-lg shadow-md"
       />
     </>
   );
+}
+
+// Add type declaration for the global initMap function
+declare global {
+  interface Window {
+    initMap: () => void;
+    google: typeof google;
+  }
 }
