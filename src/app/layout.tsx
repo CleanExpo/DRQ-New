@@ -1,7 +1,5 @@
 import { Metadata } from 'next';
 import { Inter, Montserrat } from 'next/font/google';
-import { initMonitoring } from '@/lib/monitoring';
-import { initPerformanceMonitoring } from '@/lib/performance';
 import './globals.css';
 
 const inter = Inter({
@@ -39,12 +37,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Initialize monitoring and performance tracking in production
-  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
-    initMonitoring();
-    initPerformanceMonitoring();
-  }
-
   return (
     <html lang="en-AU" className={`${inter.variable} ${montserrat.variable}`}>
       <body className="min-h-screen bg-background font-sans">
