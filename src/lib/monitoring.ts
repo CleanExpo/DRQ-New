@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/nextjs';
-import { MetricPayload, ErrorPayload, AlertLevel } from '@/types/monitoring';
+import type { MetricPayload, ErrorPayload, AlertLevel } from '../types/monitoring';
 
 // Initialize monitoring
 export function initMonitoring() {
@@ -24,13 +24,13 @@ export function reportError(error: Error | string, context?: Record<string, any>
 
   // Send to New Relic if configured
   if (process.env.NEW_RELIC_LICENSE_KEY) {
-    const newrelic = require('newrelic');
+    const newrelic = await import('newrelic');
     newrelic.noticeError(error, context);
   }
 
   // Log to LogRocket if configured
   if (process.env.LOGROCKET_APP_ID && typeof window !== 'undefined') {
-    const LogRocket = require('logrocket');
+    const LogRocket = await import('logrocket');
     LogRocket.captureException(error, {
       extra: context
     });
@@ -49,7 +49,7 @@ export function trackMetric(metric: MetricPayload) {
 
     // Send to New Relic if configured
     if (process.env.NEW_RELIC_LICENSE_KEY) {
-      const newrelic = require('newrelic');
+      const newrelic = await import('newrelic');
       newrelic.recordMetric(metric.name, metric.value);
     }
   }
@@ -93,7 +93,7 @@ export function sendAlert(message: string, level: AlertLevel = 'info', context?:
 
     // New Relic
     if (process.env.NEW_RELIC_LICENSE_KEY) {
-      const newrelic = require('newrelic');
+      const newrelic = await import('newrelic');
       newrelic.recordCustomEvent('Alert', {
         message,
         level,
@@ -103,7 +103,7 @@ export function sendAlert(message: string, level: AlertLevel = 'info', context?:
 
     // LogRocket
     if (process.env.LOGROCKET_APP_ID && typeof window !== 'undefined') {
-      const LogRocket = require('logrocket');
+      const LogRocket = await import('logrocket');
       LogRocket.track('Alert', {
         message,
         level,
@@ -141,15 +141,15 @@ export function monitorPerformance(name: string, duration: number, context?: Rec
 export async function performHealthCheck(): Promise<boolean> {
   try {
     // Check MongoDB connection
-    const { MongoClient } = require('mongodb');
-    const client = new MongoClient(process.env.MONGODB_URI);
+    const { MongoClient } = await import('mongodb');
+    const client = new MongoClient(process.env.MONGODB_URI!);
     await client.connect();
     await client.db().command({ ping: 1 });
     await client.close();
 
     // Check Redis if configured
     if (process.env.REDIS_URL) {
-      const Redis = require('ioredis');
+      const { default: Redis } = await import('ioredis');
       const redis = new Redis(process.env.REDIS_URL);
       await redis.ping();
       await redis.quit();

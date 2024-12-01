@@ -110,7 +110,7 @@ export const DEFAULT_THRESHOLDS: MonitoringThresholds = {
     queryTime: 1000,         // 1 second
     connectionTime: 5000     // 5 seconds
   }
-};
+} as const;
 
 // Monitoring event types
 export type MonitoringEvent = 

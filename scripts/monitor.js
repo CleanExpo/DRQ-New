@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { dirname, resolve } from 'path';
 import dotenv from 'dotenv';
 import { MongoClient } from 'mongodb';
 import Redis from 'ioredis';
@@ -12,9 +12,12 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Import monitoring modules
-const { monitoring } = await import(join(__dirname, '..', 'src', 'lib', 'monitoring.ts'));
-const { DEFAULT_THRESHOLDS } = await import(join(__dirname, '..', 'src', 'types', 'monitoring.ts'));
+// Import monitoring modules using file URLs
+const monitoringPath = new URL('../src/lib/monitoring.ts', import.meta.url);
+const typesPath = new URL('../src/types/monitoring.ts', import.meta.url);
+
+const { monitoring } = await import(fileURLToPath(monitoringPath));
+const { DEFAULT_THRESHOLDS } = await import(fileURLToPath(typesPath));
 
 // Parse command line arguments
 const args = process.argv.slice(2);
