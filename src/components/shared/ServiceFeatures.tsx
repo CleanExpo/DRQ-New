@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { SERVICES } from '@/config/services';
 
 export interface ServiceFeaturesProps {
   service: string;
@@ -7,54 +8,9 @@ export interface ServiceFeaturesProps {
 }
 
 export function ServiceFeatures({ service, location, showLink = true }: ServiceFeaturesProps) {
-  const serviceFeatures: Record<string, string[]> = {
-    'water-damage': [
-      '24/7 Emergency Response',
-      'Professional Water Extraction',
-      'Structural Drying',
-      'Mould Prevention',
-      'Insurance Claim Assistance'
-    ],
-    'flood-damage': [
-      'Rapid Flood Response',
-      'Water Removal & Cleanup',
-      'Content Restoration',
-      'Structural Repairs',
-      'Sanitization Services'
-    ],
-    'mould-remediation': [
-      'Mould Inspection',
-      'Safe Mould Removal',
-      'Root Cause Analysis',
-      'Prevention Strategies',
-      'Air Quality Testing'
-    ],
-    'storm-damage': [
-      'Emergency Board Up',
-      'Water Damage Control',
-      'Debris Removal',
-      'Structural Assessment',
-      'Complete Restoration'
-    ],
-    'sewage-cleanup': [
-      'Biohazard Containment',
-      'Professional Cleanup',
-      'Decontamination',
-      'Odor Removal',
-      'Sanitization'
-    ]
-  };
-
-  const serviceNames: Record<string, string> = {
-    'water-damage': 'Water Damage Restoration',
-    'flood-damage': 'Flood Damage Cleanup',
-    'mould-remediation': 'Mould Remediation',
-    'storm-damage': 'Storm Damage Repair',
-    'sewage-cleanup': 'Sewage Cleanup'
-  };
-
-  const features = serviceFeatures[service] || [];
-  const serviceName = serviceNames[service] || service;
+  const serviceData = SERVICES[service];
+  const features = serviceData?.features || [];
+  const serviceName = serviceData?.title || service;
 
   return (
     <div className="space-y-4">

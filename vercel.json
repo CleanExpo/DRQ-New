@@ -1,14 +1,8 @@
 {
   "version": 2,
-  "framework": "nextjs",
-  "regions": ["syd1"],
-  "images": {
-    "sizes": [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    "domains": [
-      "source.unsplash.com",
-      "placehold.co",
-      "images.unsplash.com"
-    ]
+  "alias": ["disasterrecoveryqld.au", "www.disasterrecoveryqld.au"],
+  "env": {
+    "NEXT_PUBLIC_SITE_URL": "https://disasterrecoveryqld.au"
   },
   "headers": [
     {
@@ -29,8 +23,11 @@
       ]
     }
   ],
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "cleanUrls": true,
-  "public": true
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/en-AU",
+      "permanent": true
+    }
+  ]
 }

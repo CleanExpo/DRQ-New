@@ -42,7 +42,7 @@ export function Breadcrumb() {
       <div className="container mx-auto">
         <ol className="flex flex-wrap items-center space-x-2 text-sm">
           {breadcrumbs.map((breadcrumb, index) => (
-            <li key={breadcrumb.href} className="flex items-center">
+            <li key={`${breadcrumb.href}-${index}`} className="flex items-center">
               {index > 0 && (
                 <svg
                   className="w-4 h-4 text-gray-400 mx-2"

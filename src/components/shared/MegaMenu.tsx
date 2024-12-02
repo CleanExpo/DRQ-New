@@ -1,101 +1,172 @@
 'use client';
 
-import { useRef } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useClickOutside } from '@/hooks/useClickOutside';
+import { SERVICES } from '@/config/services';
+import { LOCATIONS } from '@/config/locations';
 
 interface MegaMenuProps {
-  title: string;
-  items: Array<{
-    name: string;
-    href: string;
-    description?: string;
-    icon?: string;
-  }>;
   isOpen: boolean;
-  onToggle: () => void;
   onClose: () => void;
 }
 
-export function MegaMenu({ title, items, isOpen, onToggle, onClose }: MegaMenuProps) {
-  const ref = useClickOutside(onClose);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+export function MegaMenu({ isOpen, onClose }: MegaMenuProps) {
+  const [activeTab, setActiveTab] = useState<'services' | 'locations'>('services');
 
   return (
-    <div ref={ref} className="relative group">
-      <button
-        ref={buttonRef}
-        onClick={onToggle}
-        className="flex items-center space-x-1 text-gray-600 hover:text-primary font-medium px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-      >
-        <span>{title}</span>
-        <svg
-          className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
+    <div
+      className={`fixed inset-0 z-50 transform transition-transform duration-300 ${
+        isOpen ? 'translate-y-0' : '-translate-y-full'
+      }`}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Main Menu"
+    >
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-      {isOpen && (
-        <div className="absolute top-full left-0 w-screen max-w-7xl bg-white rounded-lg shadow-xl mt-2 p-6 grid grid-cols-2 gap-8 z-50">
-          <div className="col-span-2 mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
-            <p className="text-gray-600">Explore our professional restoration services</p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-8">
-            {items.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="flex items-start p-4 rounded-lg hover:bg-gray-50 transition-colors"
+      {/* Menu Content */}
+      <div className="relative bg-white shadow-xl">
+        {/* Menu Header */}
+        <div className="border-b border-gray-200">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between h-16">
+              <div className="flex space-x-8" role="tablist">
+                <button
+                  role="tab"
+                  id="services-tab"
+                  className={`px-4 py-2 font-medium text-sm transition-colors ${
+                    activeTab === 'services'
+                      ? 'text-primary border-b-2 border-primary'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                  onClick={() => setActiveTab('services')}
+                  aria-selected="true"
+                  aria-controls="services-panel"
+                  tabIndex={activeTab === 'services' ? 0 : -1}
+                >
+                  Our Services
+                </button>
+                <button
+                  role="tab"
+                  id="locations-tab"
+                  className={`px-4 py-2 font-medium text-sm transition-colors ${
+                    activeTab === 'locations'
+                      ? 'text-primary border-b-2 border-primary'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                  onClick={() => setActiveTab('locations')}
+                  aria-selected="false"
+                  aria-controls="locations-panel"
+                  tabIndex={activeTab === 'locations' ? 0 : -1}
+                >
+                  Service Areas
+                </button>
+              </div>
+              <button
                 onClick={onClose}
+                className="p-2 text-gray-500 hover:text-gray-900"
+                aria-label="Close Menu"
               >
-                {item.icon && (
-                  <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mr-4">
-                    <Image
-                      src={item.icon}
-                      alt=""
-                      width={24}
-                      height={24}
-                      className="text-primary"
-                    />
-                  </div>
-                )}
-                <div>
-                  <h4 className="text-base font-medium text-gray-900">{item.name}</h4>
-                  {item.description && (
-                    <p className="mt-1 text-sm text-gray-500">{item.description}</p>
-                  )}
-                </div>
-              </Link>
-            ))}
-          </div>
-
-          <div className="bg-gray-50 p-6 rounded-lg">
-            <h4 className="text-base font-medium text-gray-900 mb-4">Emergency Services</h4>
-            <div className="space-y-4">
-              <p className="text-sm text-gray-600">
-                Available 24/7 for urgent restoration needs across Southeast Queensland
-              </p>
-              <a
-                href="tel:1300309361"
-                className="inline-flex items-center space-x-2 text-primary hover:text-primary/90"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
-                <span className="font-medium">1300 309 361</span>
-              </a>
+              </button>
             </div>
           </div>
         </div>
-      )}
+
+        {/* Menu Content */}
+        <div className="container mx-auto px-4 py-8">
+          <div
+            role="tabpanel"
+            id="services-panel"
+            className={activeTab === 'services' ? 'block' : 'hidden'}
+            aria-labelledby="services-tab"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Object.values(SERVICES).map((service) => (
+                <Link
+                  key={service.slug}
+                  href={`/en-AU/services/${service.slug}`}
+                  className="group relative flex flex-col bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+                  onClick={onClose}
+                >
+                  <div className="relative h-48">
+                    <Image
+                      src={service.image}
+                      alt={service.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute bottom-4 left-4 text-xl font-semibold text-white">
+                      {service.title}
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <p className="text-gray-600 text-sm line-clamp-2">{service.description}</p>
+                    <div className="mt-4 flex items-center text-primary font-medium text-sm">
+                      Learn More
+                      <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+          <div
+            role="tabpanel"
+            id="locations-panel"
+            className={activeTab === 'locations' ? 'block' : 'hidden'}
+            aria-labelledby="locations-tab"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {Object.values(LOCATIONS).map((location) => (
+                <Link
+                  key={location.slug}
+                  href={`/en-AU/locations/${location.slug}`}
+                  className="group bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+                  onClick={onClose}
+                >
+                  <div className="relative h-40">
+                    <Image
+                      src={typeof location.image === 'string' ? location.image : '/images/default-location.jpg'}
+                      alt={`${location.name} service area`}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute bottom-4 left-4 text-lg font-semibold text-white">
+                      {location.name}
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <div className="flex flex-wrap gap-2">
+                      {location.services.slice(0, 3).map((service) => (
+                        <span
+                          key={service}
+                          className="inline-flex items-center px-2 py-1 rounded-full bg-gray-100 text-xs font-medium text-gray-600"
+                        >
+                          {service.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                        </span>
+                      ))}
+                      {location.services.length > 3 && (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full bg-gray-100 text-xs font-medium text-gray-600">
+                          +{location.services.length - 3} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -47,6 +47,9 @@ export function GoogleMap({
     const loaderOptions: LoaderOptions = {
       apiKey,
       version: 'weekly',
+      libraries: ['places'],
+      region: 'AU',
+      language: 'en-AU'
     };
 
     const loader = new Loader(loaderOptions);

@@ -1,28 +1,20 @@
-import { Metadata } from 'next';
-import { ServiceLocationPage } from '@/components/templates/ServiceLocationPage';
-import { getLocationBySlug } from '@/lib/locations';
-import { notFound } from 'next/navigation';
+import { Metadata } from "next";
+import { ServiceLocationPage } from "@/components/templates/ServiceLocationPage";
+import { SERVICES } from "@/config/services";
+import { LOCATIONS } from "@/config/locations";
 
 export const metadata: Metadata = {
-  title: 'Flood Damage Cleanup in Ipswich | Disaster Recovery QLD',
-  description: 'Expert flood damage cleanup and restoration services in Ipswich and surrounding areas',
+  title: "Flood Damage Restoration Ipswich | Expert Water Damage Services",
+  description: "Professional flood damage restoration in Ipswich. 24/7 emergency service, fast response. Protect your property from water damage. Call now for immediate help.",
 };
 
-export default function Page() {
-  const location = getLocationBySlug('ipswich');
-  
-  if (!location) {
-    notFound();
-  }
+export default function IpswichFloodDamagePage() {
+  const service = SERVICES['flood-damage'];
+  const location = LOCATIONS['ipswich'];
 
   return (
     <ServiceLocationPage
-      service={{
-        title: "Flood Damage Cleanup",
-        description: "Expert flood damage cleanup and restoration services",
-        image: "/images/flood-damage-cleanup.jpg",
-        slug: "flood-damage"
-      }}
+      service={service}
       location={location}
     />
   );

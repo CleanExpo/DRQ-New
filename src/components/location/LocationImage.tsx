@@ -17,8 +17,9 @@ export function LocationImage({ image }: LocationImageProps) {
             alt={image.alt}
             fill
             className="object-cover"
-            sizes="(max-width: 1280px) 100vw, 1280px"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, (max-width: 1280px) 70vw, 1200px"
             priority
+            quality={90}
           />
         </div>
       </div>

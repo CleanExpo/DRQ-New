@@ -1,23 +1,24 @@
-import { PropsWithChildren } from 'react';
+'use client';
 
-interface Schema {
-  '@context': string;
+interface SchemaData {
   '@type': string;
   [key: string]: unknown;
 }
 
-interface SchemaProviderProps extends PropsWithChildren {
-  schema: Schema;
+interface SchemaProviderProps {
+  data: SchemaData;
 }
 
-export function SchemaProvider({ schema, children }: SchemaProviderProps) {
+export function SchemaProvider({ data }: SchemaProviderProps) {
+  const schema = {
+    '@context': 'https://schema.org',
+    ...data,
+  };
+
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-      />
-      {children}
-    </>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
   );
 }

@@ -37,7 +37,7 @@ export function ServiceLocationPage({ service, location }: ServiceLocationPagePr
               {service.title} in {location.name}
             </h1>
             <p className="text-xl text-white/90">
-              Professional {service.title.toLowerCase()} services in {location.name} and surrounding areas. 
+              Professional {service.title.toLowerCase()} services in {location.name} and surrounding areas.
               24/7 emergency response available.
             </p>
           </div>
