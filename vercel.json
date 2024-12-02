@@ -2,33 +2,14 @@
   "version": 2,
   "framework": "nextjs",
   "regions": ["syd1"],
-  "env": {
-    "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY": "${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}",
-    "MONGODB_URI": "${MONGODB_URI}",
-    "NEXT_PUBLIC_API_URL": "https://www.disasterrecoveryqld.au/api",
-    "NEXT_PUBLIC_SITE_URL": "https://www.disasterrecoveryqld.au"
-  },
   "images": {
     "sizes": [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     "domains": [
       "source.unsplash.com",
       "placehold.co",
-      "images.unsplash.com",
-      "www.disasterrecoveryqld.au"
+      "images.unsplash.com"
     ]
   },
-  "redirects": [
-    {
-      "source": "/en-AU/locations/redland-shire",
-      "destination": "/en-AU/locations",
-      "permanent": true
-    },
-    {
-      "source": "/en-AU/services/:service/redland-shire",
-      "destination": "/en-AU/services/:service",
-      "permanent": true
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -44,22 +25,6 @@
         {
           "key": "X-XSS-Protection",
           "value": "1; mode=block"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "X-Requested-With, Content-Type, Authorization"
-        },
-        {
-          "key": "Access-Control-Allow-Credentials",
-          "value": "true"
         }
       ]
     }

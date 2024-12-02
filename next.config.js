@@ -5,8 +5,7 @@ const nextConfig = {
     domains: [
       'source.unsplash.com',
       'placehold.co',
-      'images.unsplash.com',
-      'www.disasterrecoveryqld.au'
+      'images.unsplash.com'
     ],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
@@ -16,16 +15,6 @@ const nextConfig = {
       {
         source: '/',
         destination: '/en-AU',
-        permanent: true,
-      },
-      {
-        source: '/en-AU/locations/sunshine-coast',
-        destination: '/en-AU/locations',
-        permanent: true,
-      },
-      {
-        source: '/en-AU/services/:service/sunshine-coast',
-        destination: '/en-AU/services/:service',
         permanent: true,
       }
     ];
@@ -46,18 +35,6 @@ const nextConfig = {
           {
             key: 'X-XSS-Protection',
             value: '1; mode=block',
-          },
-          {
-            key: 'Access-Control-Allow-Origin',
-            value: '*',
-          },
-          {
-            key: 'Access-Control-Allow-Methods',
-            value: 'GET, POST, PUT, DELETE, OPTIONS',
-          },
-          {
-            key: 'Access-Control-Allow-Headers',
-            value: 'X-Requested-With, Content-Type, Authorization',
           }
         ],
       },
@@ -72,8 +49,8 @@ const nextConfig = {
   },
   env: {
     MONGODB_URI: process.env.MONGODB_URI,
-    NEXT_PUBLIC_API_URL: 'https://www.disasterrecoveryqld.au/api',
-    NEXT_PUBLIC_SITE_URL: 'https://www.disasterrecoveryqld.au',
+    NEXT_PUBLIC_API_URL: '/api',
+    NEXT_PUBLIC_SITE_URL: '',
     NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
     NEXT_PUBLIC_COMPANY_PHONE: process.env.NEXT_PUBLIC_COMPANY_PHONE,
     NEXT_PUBLIC_COMPANY_EMAIL: process.env.NEXT_PUBLIC_COMPANY_EMAIL,
