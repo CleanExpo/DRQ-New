@@ -12,9 +12,20 @@ export function LocationHero({ location }: LocationHeroProps) {
     <section className="relative h-[400px] flex items-center bg-gradient-to-r from-blue-900 to-blue-700">
       <div className="absolute inset-0">
         <GoogleMap
-          latitude={location.coordinates.latitude}
-          longitude={location.coordinates.longitude}
+          center={{
+            lat: location.coordinates.latitude,
+            lng: location.coordinates.longitude
+          }}
           zoom={13}
+          markers={[
+            {
+              position: {
+                lat: location.coordinates.latitude,
+                lng: location.coordinates.longitude
+              },
+              title: location.name
+            }
+          ]}
         />
         <div className="absolute inset-0 bg-black/30" />
       </div>

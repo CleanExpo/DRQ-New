@@ -1,27 +1,66 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { LocationPage } from '@/components/templates/LocationPage';
-import { getLocationBySlug } from '@/lib/locations';
-import { getLocationImage } from '@/lib/images';
+import { LOCATIONS } from '@/config/locations';
 import { notFound } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'Ipswich Emergency Restoration Services | Disaster Recovery QLD',
-  description: 'Comprehensive restoration services in Ipswich',
-};
+type SearchParams = { [key: string]: string | string[] | undefined };
 
-export default function Page() {
-  const location = getLocationBySlug('ipswich');
+export async function generateStaticParams() {
+  return Object.keys(LOCATIONS).map((location) => ({
+    location,
+  }));
+}
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: { location: string };
+  searchParams: SearchParams;
+}): Promise<Metadata> {
+  const location = LOCATIONS[params.location];
   
+  if (!location) {
+    return {
+      title: 'Location Not Found',
+      description: 'The requested location page could not be found.'
+    };
+  }
+
+  const imageUrl = typeof location.image === 'string' 
+    ? location.image 
+    : location.image?.url || '/images/default-location.jpg';
+
+  return {
+    title: `${location.name} | Disaster Recovery QLD`,
+    description: `Professional restoration services in ${location.name}. Available 24/7 for emergency response.`,
+    openGraph: {
+      title: `${location.name} | Disaster Recovery QLD`,
+      description: `Professional restoration services in ${location.name}. Available 24/7 for emergency response.`,
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: location.name
+        }
+      ]
+    }
+  };
+}
+
+export default function Page({
+  params,
+  searchParams,
+}: {
+  params: { location: string };
+  searchParams: SearchParams;
+}) {
+  const location = LOCATIONS[params.location];
+
   if (!location) {
     notFound();
   }
 
-  const image = getLocationImage(location);
-
-  return (
-    <LocationPage
-      location={location}
-      image={image}
-    />
-  );
+  return <LocationPage location={location} />;
 }

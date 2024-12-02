@@ -1,0 +1,23 @@
+{
+  "id": 4418003,
+  "width": 6000,
+  "height": 4000,
+  "photographer": "Marcus Ireland",
+  "photographerUrl": "https://www.pexels.com/@marcus-ireland-313629",
+  "originalUrl": "https://www.pexels.com/photo/white-and-blue-buildings-near-body-of-water-4418003/",
+  "alt": "Redland Bay Queensland waterfront",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/redland.webp",
+      "avif": "/images/redland.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/redland-sm.webp",
+      "avif": "/images/redland-sm.avif"
+    }
+  ]
+}

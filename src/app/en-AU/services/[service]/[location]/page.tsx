@@ -1,67 +1,95 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { ServiceLocationPage } from '@/components/templates/ServiceLocationPage';
-import { getLocationBySlug } from '@/lib/locations';
-import { getService } from '@/lib/services';
+import { LOCATIONS } from '@/config/locations';
+import { SERVICE_CONTENT } from '@/config/content';
 import { notFound } from 'next/navigation';
+import { ServiceLocationPageProps } from '@/types/next';
 
-interface Props {
-  params: {
-    service: string;
-    location: string;
-  };
+// @ts-ignore
+checkFields<any>();
+
+export async function generateStaticParams() {
+  const services = Object.keys(SERVICE_CONTENT).map(service => 
+    service.toLowerCase().replace(/_/g, '-')
+  );
+  const locations = Object.keys(LOCATIONS);
+
+  const params = [];
+  for (const service of services) {
+    for (const location of locations) {
+      params.push({
+        service,
+        location,
+      });
+    }
+  }
+
+  return params;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const service = getService(params.service);
-  const location = getLocationBySlug(params.location);
+export async function generateMetadata({
+  params,
+}: {
+  params: { service: string; location: string };
+}): Promise<Metadata> {
+  const location = LOCATIONS[params.location];
+  const serviceKey = params.service.toUpperCase().replace(/-/g, '_') as keyof typeof SERVICE_CONTENT;
+  const service = SERVICE_CONTENT[serviceKey];
   
-  if (!service || !location) {
+  if (!location || !service) {
     return {
-      title: 'Service Not Found | Disaster Recovery QLD',
-      description: 'The requested service page could not be found.',
+      title: 'Service Not Found',
+      description: 'The requested service page could not be found.'
     };
   }
 
   return {
     title: `${service.title} in ${location.name} | Disaster Recovery QLD`,
-    description: `Professional ${service.title.toLowerCase()} services in ${location.name}. 24/7 emergency response for restoration and cleanup services.`,
+    description: `Professional ${service.title.toLowerCase()} services in ${location.name}. Available 24/7 for emergency response.`,
+    openGraph: {
+      title: `${service.title} in ${location.name} | Disaster Recovery QLD`,
+      description: `Professional ${service.title.toLowerCase()} services in ${location.name}. Available 24/7 for emergency response.`,
+      images: [
+        {
+          url: service.image,
+          width: 1200,
+          height: 630,
+          alt: `${service.title} in ${location.name}`
+        }
+      ]
+    }
   };
 }
 
-export async function generateStaticParams() {
-  const locations = ['brisbane', 'gold-coast', 'ipswich'];
-  const services = ['water-damage', 'flood-damage', 'mould-remediation', 'storm-damage', 'sewage-cleanup'];
-  
-  const params: Array<{ service: string; location: string }> = [];
+async function getServiceAndLocation(service: string, location: string) {
+  const locationData = LOCATIONS[location];
+  const serviceKey = service.toUpperCase().replace(/-/g, '_') as keyof typeof SERVICE_CONTENT;
+  const serviceData = SERVICE_CONTENT[serviceKey];
 
-  services.forEach((service) => {
-    locations.forEach((location) => {
-      params.push({
-        service,
-        location,
-      });
-    });
+  return Promise.resolve({
+    location: locationData,
+    service: serviceData ? {
+      title: serviceData.title,
+      description: serviceData.description,
+      image: serviceData.image,
+      slug: service
+    } : null
   });
-
-  return params;
 }
 
-export default function Page({ params }: Props) {
-  const service = getService(params.service);
-  const location = getLocationBySlug(params.location);
-  
-  if (!service || !location) {
+export default async function Page({ params }: ServiceLocationPageProps) {
+  const { location, service } = await getServiceAndLocation(
+    params.service,
+    params.location
+  );
+
+  if (!location || !service) {
     notFound();
   }
 
   return (
     <ServiceLocationPage
-      service={{
-        title: service.title,
-        description: service.description,
-        image: service.image,
-        slug: service.slug
-      }}
+      service={service}
       location={location}
     />
   );

@@ -2,44 +2,28 @@ export const SERVICE_CONTENT = {
   WATER_DAMAGE: {
     title: 'Water Damage Restoration',
     description: 'Professional water damage restoration services with rapid response',
-    metaTitle: 'Water Damage Restoration Services Brisbane | DRQ',
-    metaDescription: 'Professional water damage restoration services available 24/7. Expert water extraction, structural drying, and property restoration in Brisbane and surrounding areas.',
+    metaTitle: 'Water Damage Restoration Services | DRQ',
+    metaDescription: 'Professional water damage restoration services available 24/7. Expert water extraction, structural drying, and property restoration in Southeast Queensland.',
     features: [
+      'Emergency Water Extraction',
       'Flood Damage Cleanup',
       'Burst Pipe Repairs',
-      'Storm Damage',
+      'Storm Damage Restoration',
       'Structural Drying',
       'Moisture Detection',
       'Content Restoration'
     ],
-    featureDescriptions: {
-      'Flood Damage Cleanup': 'Professional flood water removal and property restoration services',
-      'Burst Pipe Repairs': 'Emergency response for burst pipes and water leaks',
-      'Storm Damage': 'Comprehensive storm and water damage restoration',
-      'Structural Drying': 'Professional grade equipment for thorough structural drying',
-      'Moisture Detection': 'Advanced technology to detect hidden moisture and prevent mould',
-      'Content Restoration': 'Salvage and restore water-damaged belongings'
-    },
     process: [
       'Emergency Response',
-      'Assessment',
-      'Water Removal',
-      'Restoration'
+      'Water Extraction',
+      'Drying & Dehumidification',
+      'Damage Assessment',
+      'Restoration & Repairs'
     ],
-    processDescriptions: {
-      'Emergency Response': '24/7 rapid response to minimize water damage',
-      'Assessment': 'Thorough inspection and damage assessment',
-      'Water Removal': 'Professional water extraction and drying',
-      'Restoration': 'Complete property restoration and repairs'
-    },
     faqs: [
       {
         question: 'How quickly can you respond to water damage emergencies?',
-        answer: 'We provide 24/7 emergency response with typical arrival times of 1-2 hours in the Brisbane area.'
-      },
-      {
-        question: 'What areas do you service for water damage restoration?',
-        answer: 'We service Brisbane, Gold Coast, Ipswich, Logan, and surrounding areas in South East Queensland.'
+        answer: 'We provide 24/7 emergency response with typical arrival times of 1-2 hours in Southeast Queensland.'
       },
       {
         question: 'Do you work with insurance companies?',
@@ -50,114 +34,29 @@ export const SERVICE_CONTENT = {
         answer: 'The timeline varies depending on damage severity, typically 3-5 days for standard water damage and up to 2 weeks for severe cases.'
       }
     ],
-    image: '/images/services/water-damage.jpg',
-    schema: {
-      service: {
-        "@type": "Service",
-        "name": "Water Damage Restoration",
-        "provider": {
-          "@type": "LocalBusiness",
-          "name": "Disaster Recovery Queensland"
-        },
-        "areaServed": "Brisbane and South East Queensland",
-        "description": "Professional water damage restoration services available 24/7"
-      }
-    }
-  },
-  FIRE_DAMAGE: {
-    title: 'Fire Damage Recovery',
-    description: 'Expert fire and smoke damage restoration services',
-    metaTitle: 'Fire Damage Restoration Services Brisbane | DRQ',
-    metaDescription: 'Professional fire damage restoration services available 24/7. Expert smoke damage cleanup, odor removal, and structural restoration in Brisbane and surrounding areas.',
-    features: [
-      'Fire Damage Assessment',
-      'Smoke Damage Cleanup',
-      'Odor Removal',
-      'Structural Restoration',
-      'Content Cleaning',
-      'Soot Removal'
-    ],
-    featureDescriptions: {
-      'Fire Damage Assessment': 'Comprehensive evaluation of fire and smoke damage',
-      'Smoke Damage Cleanup': 'Professional smoke residue removal services',
-      'Odor Removal': 'Advanced techniques for complete odor elimination',
-      'Structural Restoration': 'Expert structural repair and reconstruction',
-      'Content Cleaning': 'Specialized cleaning for fire-damaged items',
-      'Soot Removal': 'Thorough soot cleanup and surface restoration'
-    },
-    process: [
-      'Damage Assessment',
-      'Security and Board-up',
-      'Cleanup Process',
-      'Restoration'
-    ],
-    processDescriptions: {
-      'Damage Assessment': 'Thorough evaluation of fire and smoke damage',
-      'Security and Board-up': 'Immediate property security measures',
-      'Cleanup Process': 'Professional smoke and soot removal',
-      'Restoration': 'Complete property restoration and reconstruction'
-    },
-    faqs: [
-      {
-        question: 'How quickly can you respond to fire damage emergencies?',
-        answer: 'We provide 24/7 emergency response with typical arrival times of 1-2 hours in the Brisbane area.'
-      },
-      {
-        question: 'Do you handle insurance claims for fire damage?',
-        answer: 'Yes, we work directly with all major insurance companies and can assist with your claim process.'
-      },
-      {
-        question: 'How long does fire damage restoration take?',
-        answer: 'The timeline varies depending on damage severity, typically 1-2 weeks for moderate damage and up to several weeks for severe cases.'
-      }
-    ],
-    image: '/images/services/fire-damage.jpg',
-    schema: {
-      service: {
-        "@type": "Service",
-        "name": "Fire Damage Recovery",
-        "provider": {
-          "@type": "LocalBusiness",
-          "name": "Disaster Recovery Queensland"
-        },
-        "areaServed": "Brisbane and South East Queensland",
-        "description": "Expert fire and smoke damage restoration services"
-      }
-    }
+    image: '/images/water-damage-restoration.jpg'
   },
   MOULD_REMEDIATION: {
     title: 'Mould Remediation',
     description: 'Professional mould removal and prevention services',
-    metaTitle: 'Mould Remediation Services Brisbane | DRQ',
-    metaDescription: 'Professional mould removal and prevention services available 24/7. Expert inspection, safe removal, and prevention treatment in Brisbane and surrounding areas.',
+    metaTitle: 'Mould Remediation Services | DRQ',
+    metaDescription: 'Expert mould removal and remediation services. Professional inspection, safe removal, and prevention treatment in Southeast Queensland.',
     features: [
-      'Mould Inspection',
+      'Comprehensive Mould Inspection',
       'Air Quality Testing',
-      'Containment Setup',
-      'Safe Removal',
+      'Safe Mould Removal',
+      'Moisture Source Identification',
       'Prevention Treatment',
-      'Structural Drying'
+      'Structural Drying',
+      'Post-Remediation Verification'
     ],
-    featureDescriptions: {
-      'Mould Inspection': 'Comprehensive mould detection and assessment',
-      'Air Quality Testing': 'Professional indoor air quality analysis',
-      'Containment Setup': 'Advanced containment to prevent spread',
-      'Safe Removal': 'Safe and thorough mould removal process',
-      'Prevention Treatment': 'Long-term mould prevention solutions',
-      'Structural Drying': 'Complete structural moisture removal'
-    },
     process: [
-      'Initial Testing',
-      'Area Containment',
+      'Initial Assessment',
+      'Containment Setup',
+      'Air Filtration',
       'Mould Removal',
-      'Prevention'
+      'Prevention Treatment'
     ],
-    processDescriptions: {
-      'Initial Testing': 'Thorough mould and moisture testing',
-      'Area Containment': 'Professional containment setup',
-      'Mould Removal': 'Safe and effective mould removal',
-      'Prevention': 'Long-term prevention measures'
-    },
     faqs: [
       {
         question: 'Is mould dangerous to health?',
@@ -168,22 +67,195 @@ export const SERVICE_CONTENT = {
         answer: 'The process typically takes 3-7 days depending on the extent of mould growth and the size of the affected area.'
       },
       {
-        question: 'Do you provide mould prevention services?',
-        answer: 'Yes, we offer comprehensive mould prevention services including moisture control and preventive treatments.'
+        question: 'How do you prevent mould from returning?',
+        answer: 'We address the root cause of moisture problems, properly clean and treat affected areas, and provide recommendations for preventing future mould growth.'
       }
     ],
-    image: '/images/services/mould-remediation.jpg',
-    schema: {
-      service: {
-        "@type": "Service",
-        "name": "Mould Remediation",
-        "provider": {
-          "@type": "LocalBusiness",
-          "name": "Disaster Recovery Queensland"
-        },
-        "areaServed": "Brisbane and South East Queensland",
-        "description": "Professional mould removal and prevention services"
+    image: '/images/mould-remediation.jpg'
+  },
+  SEWAGE_CLEANUP: {
+    title: 'Sewage Cleanup',
+    description: 'Professional sewage cleanup and sanitization services',
+    metaTitle: 'Sewage Cleanup Services | DRQ',
+    metaDescription: 'Expert sewage cleanup and sanitization services. Professional removal, cleaning, and decontamination in Southeast Queensland.',
+    features: [
+      'Emergency Sewage Removal',
+      'Biohazard Cleanup',
+      'Professional Sanitization',
+      'Odor Removal',
+      'Structural Drying',
+      'Damage Restoration',
+      'Preventive Treatment'
+    ],
+    process: [
+      'Emergency Response',
+      'Area Containment',
+      'Waste Removal',
+      'Sanitization',
+      'Restoration'
+    ],
+    faqs: [
+      {
+        question: 'Is sewage cleanup dangerous?',
+        answer: 'Yes, sewage contains harmful bacteria and pathogens. Professional cleanup with proper safety equipment is essential.'
+      },
+      {
+        question: 'How long does sewage cleanup take?',
+        answer: 'The process typically takes 2-4 days depending on the extent of contamination and affected area size.'
+      },
+      {
+        question: 'Do you handle insurance claims for sewage damage?',
+        answer: 'Yes, we work with all major insurance companies and can assist with your claim process.'
       }
-    }
+    ],
+    image: '/images/sewage-cleanup.jpg'
+  },
+  STORM_DAMAGE: {
+    title: 'Storm Damage Repair',
+    description: 'Professional storm damage restoration services',
+    metaTitle: 'Storm Damage Repair Services | DRQ',
+    metaDescription: 'Expert storm damage repair and restoration services. Professional assessment, emergency repairs, and complete restoration in Southeast Queensland.',
+    features: [
+      'Emergency Board Up',
+      'Water Extraction',
+      'Structural Drying',
+      'Debris Removal',
+      'Roof Tarping',
+      'Property Restoration',
+      'Content Protection'
+    ],
+    process: [
+      'Emergency Response',
+      'Damage Assessment',
+      'Water Removal',
+      'Property Protection',
+      'Restoration'
+    ],
+    faqs: [
+      {
+        question: 'Do you provide emergency storm damage services?',
+        answer: 'Yes, we offer 24/7 emergency response for storm damage with rapid arrival times.'
+      },
+      {
+        question: 'What types of storm damage do you handle?',
+        answer: 'We handle all types of storm damage including water damage, wind damage, fallen trees, and structural damage.'
+      },
+      {
+        question: 'How do you protect property during repairs?',
+        answer: 'We use emergency board-up services and roof tarping to prevent further damage while repairs are being completed.'
+      }
+    ],
+    image: '/images/storm-damage-repair.jpg'
+  },
+  FIRE_DAMAGE: {
+    title: 'Fire Damage Restoration',
+    description: 'Professional fire and smoke damage restoration',
+    metaTitle: 'Fire Damage Restoration Services | DRQ',
+    metaDescription: 'Expert fire and smoke damage restoration services. Professional cleanup, odor removal, and complete restoration in Southeast Queensland.',
+    features: [
+      'Emergency Response',
+      'Smoke Damage Cleanup',
+      'Odor Removal',
+      'Structural Cleaning',
+      'Content Restoration',
+      'Soot Removal',
+      'Reconstruction Services'
+    ],
+    process: [
+      'Emergency Securing',
+      'Damage Assessment',
+      'Debris Removal',
+      'Cleaning & Deodorizing',
+      'Restoration'
+    ],
+    faqs: [
+      {
+        question: 'How quickly can you respond to fire damage?',
+        answer: 'We provide 24/7 emergency response with rapid arrival times to prevent further damage.'
+      },
+      {
+        question: 'Can smoke odor be completely removed?',
+        answer: 'Yes, we use professional-grade equipment and techniques to completely remove smoke odors.'
+      },
+      {
+        question: 'What about items damaged by fire?',
+        answer: 'We assess each item and restore what is salvageable using specialized cleaning techniques.'
+      }
+    ],
+    image: '/images/fire-damage.jpg'
+  },
+  CRIME_SCENE_CLEANING: {
+    title: 'Crime Scene Cleaning',
+    description: 'Professional crime scene cleanup services',
+    metaTitle: 'Crime Scene Cleaning Services | DRQ',
+    metaDescription: 'Expert crime scene cleanup services. Professional, discreet, and thorough cleaning in Southeast Queensland.',
+    features: [
+      'Biohazard Cleanup',
+      'Discreet Service',
+      'Professional Sanitization',
+      'Odor Removal',
+      'Property Restoration',
+      'Legal Compliance',
+      'Documentation'
+    ],
+    process: [
+      'Initial Assessment',
+      'Area Containment',
+      'Biohazard Removal',
+      'Sanitization',
+      'Restoration'
+    ],
+    faqs: [
+      {
+        question: 'Are your crime scene cleaning services discreet?',
+        answer: 'Yes, we maintain complete confidentiality and use unmarked vehicles for discretion.'
+      },
+      {
+        question: 'Are you properly certified for crime scene cleanup?',
+        answer: 'Yes, our technicians are fully certified and trained in biohazard cleanup procedures.'
+      },
+      {
+        question: 'How long does crime scene cleanup take?',
+        answer: 'The timeline varies depending on the situation, typically 1-3 days for complete restoration.'
+      }
+    ],
+    image: '/images/default-service.jpg'
+  },
+  STRUCTURAL_DRYING: {
+    title: 'Structural Drying',
+    description: 'Professional structural drying services',
+    metaTitle: 'Structural Drying Services | DRQ',
+    metaDescription: 'Expert structural drying services. Professional equipment, monitoring, and complete moisture removal in Southeast Queensland.',
+    features: [
+      'Advanced Drying Equipment',
+      'Moisture Monitoring',
+      'Temperature Control',
+      'Humidity Management',
+      'Documentation',
+      'Mould Prevention',
+      'Structural Integrity'
+    ],
+    process: [
+      'Initial Assessment',
+      'Equipment Setup',
+      'Monitoring',
+      'Moisture Testing',
+      'Completion Verification'
+    ],
+    faqs: [
+      {
+        question: 'How long does structural drying take?',
+        answer: 'The process typically takes 3-5 days depending on the extent of moisture and materials involved.'
+      },
+      {
+        question: 'What equipment do you use?',
+        answer: 'We use professional-grade air movers, dehumidifiers, and moisture monitoring equipment.'
+      },
+      {
+        question: 'How do you prevent mould during drying?',
+        answer: 'We use antimicrobial treatments and maintain optimal drying conditions to prevent mould growth.'
+      }
+    ],
+    image: '/images/default-service.jpg'
   }
 } as const;

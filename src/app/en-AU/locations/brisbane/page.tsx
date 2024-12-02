@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import { LocationPage } from '@/components/templates/LocationPage';
 import { getLocationBySlug } from '@/lib/locations';
-import { getLocationImage } from '@/lib/images';
 import { notFound } from 'next/navigation';
 
 export const metadata: Metadata = {
@@ -16,12 +15,5 @@ export default function Page() {
     notFound();
   }
 
-  const image = getLocationImage(location);
-
-  return (
-    <LocationPage
-      location={location}
-      image={image}
-    />
-  );
+  return <LocationPage location={location} />;
 }

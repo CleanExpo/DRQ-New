@@ -1,0 +1,23 @@
+{
+  "id": 27001157,
+  "width": 7500,
+  "height": 5000,
+  "photographer": "Sohan Rahat",
+  "photographerUrl": "https://www.pexels.com/@sohan-rahat-1445529889",
+  "originalUrl": "https://www.pexels.com/photo/people-are-standing-on-the-shore-with-a-boat-27001157/",
+  "alt": "water damage restoration professional",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/water-damage.webp",
+      "avif": "/images/water-damage.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/water-damage-sm.webp",
+      "avif": "/images/water-damage-sm.avif"
+    }
+  ]
+}

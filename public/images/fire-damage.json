@@ -1,0 +1,23 @@
+{
+  "id": 6415962,
+  "width": 9504,
+  "height": 6336,
+  "photographer": "Quang Nguyen Vinh",
+  "photographerUrl": "https://www.pexels.com/@quang-nguyen-vinh-222549",
+  "originalUrl": "https://www.pexels.com/photo/small-sprouts-growing-on-burnt-ground-6415962/",
+  "alt": "fire damage restoration service",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/fire-damage.webp",
+      "avif": "/images/fire-damage.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/fire-damage-sm.webp",
+      "avif": "/images/fire-damage-sm.avif"
+    }
+  ]
+}

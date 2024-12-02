@@ -1,52 +1,64 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { LocationPage } from '@/components/templates/LocationPage';
-import { getLocationBySlug } from '@/lib/locations';
-import { getLocationImage } from '@/lib/images';
+import { LOCATIONS } from '@/config/locations';
 import { notFound } from 'next/navigation';
+import { LocationPageProps } from '@/types/next';
+import React from 'react';
 
-interface Props {
-  params: {
-    location: string;
-  };
+export async function generateStaticParams() {
+  return Object.keys(LOCATIONS).map((location) => ({
+    location,
+  }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const location = getLocationBySlug(params.location);
+export async function generateMetadata({
+  params,
+}: {
+  params: { location: string };
+}): Promise<Metadata> {
+  const location = LOCATIONS[params.location];
   
   if (!location) {
     return {
-      title: 'Location Not Found | Disaster Recovery QLD',
-      description: 'The requested location page could not be found.',
+      title: 'Location Not Found',
+      description: 'The requested location page could not be found.'
     };
   }
 
+  const imageUrl = typeof location.image === 'string' 
+    ? location.image 
+    : location.image?.url || '/images/default-location.jpg';
+
   return {
-    title: `${location.name} Emergency Restoration Services | Disaster Recovery QLD`,
-    description: `Professional disaster recovery and restoration services in ${location.name}. 24/7 emergency response for water damage, flood cleanup, and storm damage repair.`,
+    title: `${location.name} | Disaster Recovery QLD`,
+    description: `Professional restoration services in ${location.name}. Available 24/7 for emergency response.`,
+    openGraph: {
+      title: `${location.name} | Disaster Recovery QLD`,
+      description: `Professional restoration services in ${location.name}. Available 24/7 for emergency response.`,
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: location.name
+        }
+      ]
+    }
   };
 }
 
-export async function generateStaticParams() {
-  return [
-    { location: 'brisbane' },
-    { location: 'gold-coast' },
-    { location: 'ipswich' }
-  ];
+async function getLocation(location: string) {
+  return Promise.resolve(LOCATIONS[location]);
 }
 
-export default function Page({ params }: Props) {
-  const location = getLocationBySlug(params.location);
-  
+const Page: React.FC<LocationPageProps> = async ({ params }) => {
+  const location = await getLocation(params.location);
+
   if (!location) {
     notFound();
   }
 
-  const image = getLocationImage(location);
+  return <LocationPage location={location} />;
+};
 
-  return (
-    <LocationPage
-      location={location}
-      image={image}
-    />
-  );
-}
+export default Page;

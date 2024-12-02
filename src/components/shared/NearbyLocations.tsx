@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Location, NearbyLocation, serviceLocations } from '@/types/locations';
+import { Location, serviceLocations } from '@/types/locations';
+import { LOCATIONS } from '@/config/locations';
 
 interface NearbyLocationsProps {
   title?: string;
@@ -8,11 +9,17 @@ interface NearbyLocationsProps {
   currentLocation?: Location;
 }
 
+interface NearbyLocation {
+  name: string;
+  slug: string;
+  distance: number;
+}
+
 export function NearbyLocations({ 
   title = "Service Areas",
   locations = serviceLocations.map(loc => ({
-    name: loc.name,
-    slug: loc.slug,
+    name: LOCATIONS[loc].name,
+    slug: LOCATIONS[loc].slug,
     distance: 0
   })),
   showAllLocations = true,

@@ -1,0 +1,23 @@
+{
+  "id": 26125051,
+  "width": 7728,
+  "height": 5152,
+  "photographer": "Nate Biddle",
+  "photographerUrl": "https://www.pexels.com/@nxbid0",
+  "originalUrl": "https://www.pexels.com/photo/a-long-exposure-photograph-of-a-bridge-over-the-river-26125051/",
+  "alt": "Brisbane city skyline modern",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/brisbane.webp",
+      "avif": "/images/brisbane.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/brisbane-sm.webp",
+      "avif": "/images/brisbane-sm.avif"
+    }
+  ]
+}

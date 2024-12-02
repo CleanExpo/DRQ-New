@@ -1,61 +1,71 @@
 {
   "name": "Disaster Recovery Queensland",
   "short_name": "DRQ",
-  "description": "Professional disaster recovery and restoration services in Brisbane and South East Queensland",
-  "start_url": "/en-AU",
+  "description": "Professional restoration services across Southeast Queensland. Available 24/7 for emergencies.",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#0369a1",
+  "theme_color": "#1e3a8a",
   "icons": [
     {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
+      "src": "/images/logo.png",
+      "sizes": "120x120",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
+      "src": "/images/logo@2x.png",
+      "sizes": "240x240",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/logo@3x.png",
+      "sizes": "360x360",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-  "orientation": "portrait",
-  "categories": ["business", "services"],
-  "shortcuts": [
-    {
-      "name": "Emergency Contact",
-      "short_name": "Contact",
-      "description": "Contact us for emergency services",
-      "url": "/en-AU/contact",
-      "icons": [{ "src": "/icon-96.png", "sizes": "96x96" }]
-    },
-    {
-      "name": "Water Damage Services",
-      "short_name": "Water Damage",
-      "description": "Professional water damage restoration",
-      "url": "/en-AU/services/water-damage",
-      "icons": [{ "src": "/icon-96.png", "sizes": "96x96" }]
-    }
+  "categories": [
+    "business",
+    "utilities",
+    "emergency"
   ],
   "screenshots": [
     {
       "src": "/screenshots/home.jpg",
-      "sizes": "1080x1920",
+      "sizes": "1280x720",
       "type": "image/jpeg",
-      "platform": "narrow",
-      "label": "Home Screen"
+      "platform": "wide",
+      "label": "Homepage of Disaster Recovery Queensland"
     },
     {
       "src": "/screenshots/services.jpg",
-      "sizes": "1080x1920",
+      "sizes": "1280x720",
       "type": "image/jpeg",
-      "platform": "narrow",
-      "label": "Services Screen"
+      "platform": "wide",
+      "label": "Our Services"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Emergency Contact",
+      "short_name": "Emergency",
+      "description": "Contact us for emergency services",
+      "url": "/en-AU/contact",
+      "icons": [{ "src": "/images/logo.png", "sizes": "120x120" }]
+    },
+    {
+      "name": "Our Services",
+      "short_name": "Services",
+      "description": "View our restoration services",
+      "url": "/en-AU/services",
+      "icons": [{ "src": "/images/logo.png", "sizes": "120x120" }]
     }
   ],
   "related_applications": [],
   "prefer_related_applications": false,
-  "lang": "en-AU",
-  "dir": "ltr"
+  "orientation": "any",
+  "scope": "/",
+  "lang": "en-AU"
 }

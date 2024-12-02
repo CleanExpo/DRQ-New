@@ -12,13 +12,28 @@ export const companyConfig = {
     facebook: 'https://www.facebook.com/disasterrecoveryqld',
     instagram: 'https://www.instagram.com/disasterrecoveryqld'
   },
+  mainOffice: {
+    name: 'Head Office',
+    address: '17 Tile St',
+    suburb: 'Wacol',
+    state: 'QLD',
+    postcode: '4076'
+  },
   locations: {
     brisbane: {
-      name: 'Brisbane',
+      name: 'Brisbane CBD',
       state: 'QLD',
       coordinates: {
         lat: -27.4698,
         lng: 153.0251
+      }
+    },
+    logan: {
+      name: 'Logan City',
+      state: 'QLD',
+      coordinates: {
+        lat: -27.6389,
+        lng: 153.1073
       }
     },
     goldCoast: {
@@ -27,6 +42,22 @@ export const companyConfig = {
       coordinates: {
         lat: -28.0167,
         lng: 153.4000
+      }
+    },
+    redlands: {
+      name: 'Redland Shire',
+      state: 'QLD',
+      coordinates: {
+        lat: -27.5254,
+        lng: 153.2547
+      }
+    },
+    ipswich: {
+      name: 'Ipswich',
+      state: 'QLD',
+      coordinates: {
+        lat: -27.6167,
+        lng: 152.7667
       }
     }
   }
@@ -61,6 +92,10 @@ export function getCompanyLocations(): typeof companyConfig.locations {
   return companyConfig.locations;
 }
 
+export function getMainOffice(): typeof companyConfig.mainOffice {
+  return companyConfig.mainOffice;
+}
+
 // Format for display
 export function formatBusinessHours(): string {
   const { weekday, weekend, emergency } = companyConfig.hours;
@@ -76,6 +111,14 @@ export function getCompanySchema() {
     telephone: companyConfig.phone,
     email: companyConfig.email,
     url: `https://${companyConfig.website}`,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: companyConfig.mainOffice.address,
+      addressLocality: companyConfig.mainOffice.suburb,
+      addressRegion: companyConfig.mainOffice.state,
+      postalCode: companyConfig.mainOffice.postcode,
+      addressCountry: "AU"
+    },
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",

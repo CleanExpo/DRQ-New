@@ -1,0 +1,23 @@
+{
+  "id": 27959960,
+  "width": 7000,
+  "height": 3938,
+  "photographer": "Mr Alex Photography",
+  "photographerUrl": "https://www.pexels.com/@mralexphotography",
+  "originalUrl": "https://www.pexels.com/photo/a-statue-is-in-front-of-a-building-with-flags-27959960/",
+  "alt": "Ipswich Queensland historic buildings",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/ipswich.webp",
+      "avif": "/images/ipswich.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/ipswich-sm.webp",
+      "avif": "/images/ipswich-sm.avif"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+# www.robotstxt.org
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://www.disasterrecoveryqld.au/sitemap.xml
+
+# Service pages
+Allow: /en-AU/services/
+Allow: /en-AU/locations/
+
+# Main content pages
+Allow: /en-AU/about
+Allow: /en-AU/contact
+Allow: /en-AU/privacy
+Allow: /en-AU/terms
+
+# Prevent access to API routes
+Disallow: /api/
+
+# Prevent access to development/staging environments
+Disallow: /staging/
+Disallow: /dev/
+Disallow: /test/
+
+# Prevent access to admin areas
+Disallow: /admin/
+Disallow: /dashboard/
+
+# Prevent indexing of search results
+Disallow: /search/
+
+# Rate limiting
+Crawl-delay: 1
+
+# Additional rules for specific bots
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: GPTBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 2
+
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 2
+
+# Block bad bots
+User-agent: Bytespider
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /

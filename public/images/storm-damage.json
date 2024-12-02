@@ -1,0 +1,23 @@
+{
+  "id": 5351114,
+  "width": 6000,
+  "height": 4000,
+  "photographer": "Mike Bird",
+  "photographerUrl": "https://www.pexels.com/@mikebirdy",
+  "originalUrl": "https://www.pexels.com/photo/a-car-crushed-by-a-broken-tree-5351114/",
+  "alt": "storm damage repair house",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/storm-damage.webp",
+      "avif": "/images/storm-damage.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/storm-damage-sm.webp",
+      "avif": "/images/storm-damage-sm.avif"
+    }
+  ]
+}

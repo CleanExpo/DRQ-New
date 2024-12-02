@@ -1,0 +1,23 @@
+{
+  "id": 786357,
+  "width": 6000,
+  "height": 4000,
+  "photographer": "L M",
+  "photographerUrl": "https://www.pexels.com/@lifeinmelancholy",
+  "originalUrl": "https://www.pexels.com/photo/chicago-coastline-786357/",
+  "alt": "Logan City Queensland aerial",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/logan.webp",
+      "avif": "/images/logan.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/logan-sm.webp",
+      "avif": "/images/logan-sm.avif"
+    }
+  ]
+}

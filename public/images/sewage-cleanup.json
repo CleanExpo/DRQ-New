@@ -1,0 +1,23 @@
+{
+  "id": 13735915,
+  "width": 6000,
+  "height": 4000,
+  "photographer": "Mizuno K",
+  "photographerUrl": "https://www.pexels.com/@mizunokozuki",
+  "originalUrl": "https://www.pexels.com/photo/hygiene-at-cafe-13735915/",
+  "alt": "sewage cleanup professional service",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/sewage-cleanup.webp",
+      "avif": "/images/sewage-cleanup.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/sewage-cleanup-sm.webp",
+      "avif": "/images/sewage-cleanup-sm.avif"
+    }
+  ]
+}

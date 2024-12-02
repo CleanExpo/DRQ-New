@@ -1,0 +1,23 @@
+{
+  "id": 27177800,
+  "width": 6048,
+  "height": 4032,
+  "photographer": "Marcus Ireland",
+  "photographerUrl": "https://www.pexels.com/@marcus-ireland-313629",
+  "originalUrl": "https://www.pexels.com/photo/wave-on-sea-shore-in-city-27177800/",
+  "alt": "Gold Coast Australia beach skyline",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/gold-coast.webp",
+      "avif": "/images/gold-coast.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/gold-coast-sm.webp",
+      "avif": "/images/gold-coast-sm.avif"
+    }
+  ]
+}

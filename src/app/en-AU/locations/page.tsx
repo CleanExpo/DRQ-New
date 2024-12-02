@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import { LocationsPage } from '@/components/templates/LocationsPage';
-import { Location, serviceLocations } from '@/types/locations';
-import { getLocationImage } from '@/lib/images';
+import { LOCATIONS } from '@/config/locations';
 
 export const metadata: Metadata = {
   title: 'Service Locations | Disaster Recovery QLD',
@@ -21,24 +20,9 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  // Process locations to ensure each has an image
-  const locationsWithImages = serviceLocations.map((location: Location) => {
-    const locationCopy = { ...location } as Partial<Location>;
-    // Remove the image property if it exists to avoid type conflicts
-    if ('image' in locationCopy) {
-      delete locationCopy.image;
-    }
-    
-    // Get the appropriate image for this location
-    const image = getLocationImage(location);
-    
-    return {
-      ...(locationCopy as Location),
-      image
-    };
-  });
+  const locations = Object.values(LOCATIONS);
 
   return (
-    <LocationsPage locations={locationsWithImages} />
+    <LocationsPage locations={locations} />
   );
 }

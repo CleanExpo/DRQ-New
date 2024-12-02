@@ -14,7 +14,7 @@ export function LocationImage({ image }: LocationImageProps) {
         <div className="relative h-[400px] rounded-lg overflow-hidden shadow-lg">
           <Image
             src={image.url}
-            alt={image.alt}
+            alt={image.alt || 'Location image'}
             fill
             className="object-cover"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, (max-width: 1280px) 70vw, 1200px"

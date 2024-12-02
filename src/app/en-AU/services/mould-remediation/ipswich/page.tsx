@@ -1,27 +1,88 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { ServiceLocationPage } from '@/components/templates/ServiceLocationPage';
-import { getLocationBySlug } from '@/lib/locations';
+import { LOCATIONS } from '@/config/locations';
+import { SERVICE_CONTENT } from '@/config/content';
 import { notFound } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'Mould Remediation in Ipswich | Disaster Recovery QLD',
-  description: 'Professional mould removal and remediation services in Ipswich and surrounding areas',
-};
+type SearchParams = { [key: string]: string | string[] | undefined };
 
-export default function Page() {
-  const location = getLocationBySlug('ipswich');
+export async function generateStaticParams() {
+  const services = Object.keys(SERVICE_CONTENT).map(service => 
+    service.toLowerCase().replace(/_/g, '-')
+  );
+  const locations = Object.keys(LOCATIONS);
+
+  const params = [];
+  for (const service of services) {
+    for (const location of locations) {
+      params.push({
+        service,
+        location,
+      });
+    }
+  }
+
+  return params;
+}
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: { service: string; location: string };
+  searchParams: SearchParams;
+}): Promise<Metadata> {
+  const location = LOCATIONS[params.location];
+  const serviceKey = params.service.toUpperCase().replace(/-/g, '_') as keyof typeof SERVICE_CONTENT;
+  const service = SERVICE_CONTENT[serviceKey];
   
-  if (!location) {
+  if (!location || !service) {
+    return {
+      title: 'Service Not Found',
+      description: 'The requested service page could not be found.'
+    };
+  }
+
+  return {
+    title: `${service.title} in ${location.name} | Disaster Recovery QLD`,
+    description: `Professional ${service.title.toLowerCase()} services in ${location.name}. Available 24/7 for emergency response.`,
+    openGraph: {
+      title: `${service.title} in ${location.name} | Disaster Recovery QLD`,
+      description: `Professional ${service.title.toLowerCase()} services in ${location.name}. Available 24/7 for emergency response.`,
+      images: [
+        {
+          url: service.image,
+          width: 1200,
+          height: 630,
+          alt: `${service.title} in ${location.name}`
+        }
+      ]
+    }
+  };
+}
+
+export default function Page({
+  params,
+  searchParams,
+}: {
+  params: { service: string; location: string };
+  searchParams: SearchParams;
+}) {
+  const location = LOCATIONS[params.location];
+  const serviceKey = params.service.toUpperCase().replace(/-/g, '_') as keyof typeof SERVICE_CONTENT;
+  const service = SERVICE_CONTENT[serviceKey];
+
+  if (!location || !service) {
     notFound();
   }
 
   return (
     <ServiceLocationPage
       service={{
-        title: "Mould Remediation",
-        description: "Professional mould removal and remediation services",
-        image: "/images/mould-remediation.jpg",
-        slug: "mould-remediation"
+        title: service.title,
+        description: service.description,
+        image: service.image,
+        slug: params.service
       }}
       location={location}
     />
