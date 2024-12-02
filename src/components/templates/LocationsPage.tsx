@@ -1,133 +1,110 @@
+'use client';
+
+import Link from 'next/link';
 import Image from 'next/image';
 import { Location, LocationImage } from '@/types/locations';
 import { GoogleMap } from '@/components/maps/GoogleMap';
-import { SchemaProvider } from '@/components/SchemaProvider';
 
 interface LocationsPageProps {
-  locations: Array<{
-    location: Location;
-    image: LocationImage;
-    coordinates: {
-      latitude: number;
-      longitude: number;
-    };
-  }>;
-  centerCoordinates: {
-    latitude: number;
-    longitude: number;
-  };
+  locations: Array<Location & { image: LocationImage }>;
 }
 
-export function LocationsPage({ locations, centerCoordinates }: LocationsPageProps) {
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Disaster Recovery QLD",
-    description: "Professional disaster recovery and restoration services across Southeast Queensland",
-    url: "https://disasterrecoveryqld.au",
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "17 Tile St",
-      addressLocality: "Wacol",
-      addressRegion: "QLD",
-      postalCode: "4076",
-      addressCountry: "AU"
-    },
-    areaServed: {
-      "@type": "State",
-      name: "Queensland"
-    },
-    contactPoint: {
-      "@type": "ContactPoint",
-      telephone: "1300 309 361",
-      contactType: "customer service",
-      areaServed: "QLD",
-      availableLanguage: "English",
-      hoursAvailable: [
-        {
-          "@type": "OpeningHoursSpecification",
-          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-          opens: "08:00",
-          closes: "16:00"
-        },
-        {
-          "@type": "OpeningHoursSpecification",
-          dayOfWeek: ["Saturday", "Sunday"],
-          description: "On-call service available"
-        }
-      ]
-    }
-  };
-
+export function LocationsPage({ locations }: LocationsPageProps) {
   return (
-    <SchemaProvider schema={schema}>
-      <div className="container mx-auto px-4 py-8">
-        <header className="mb-8 text-center">
-          <h1 className="text-4xl font-bold mb-4">Our Service Locations</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Professional restoration services across Southeast Queensland. With our main office in Wacol and satellite locations throughout the region, we're ready to respond to emergencies 24/7.
-          </p>
-          <div className="mt-6 bg-primary/10 rounded-lg p-6 inline-block">
-            <p className="font-semibold mb-2">24/7 Emergency Service</p>
-            <a href="tel:1300309361" className="text-2xl font-bold text-primary hover:underline">
-              1300 309 361
-            </a>
-          </div>
-        </header>
-
-        <div className="h-[500px] mb-12 rounded-lg overflow-hidden">
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative h-[400px] flex items-center bg-gradient-to-r from-blue-900 to-blue-700">
+        <div className="absolute inset-0">
           <GoogleMap
-            latitude={centerCoordinates.latitude}
-            longitude={centerCoordinates.longitude}
-            zoom={9}
-            height="500px"
+            latitude={-27.4698}
+            longitude={153.0251}
+            zoom={8}
           />
+          <div className="absolute inset-0 bg-black/30" />
         </div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-3xl">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Service Locations
+            </h1>
+            <p className="text-xl text-white/90">
+              Professional restoration services across Southeast Queensland. Find your nearest location.
+            </p>
+          </div>
+        </div>
+      </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {locations.map(({ location, image }) => (
-            <a
-              key={location.id}
-              href={`/en-AU/locations/${location.slug}`}
-              className="block bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
-            >
-              <div className="relative h-48">
-                <Image
-                  src={image.url}
-                  alt={image.alt}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="p-6">
-                <h2 className="text-2xl font-bold mb-2">{location.name}</h2>
-                <p className="text-gray-600 mb-4">{location.description}</p>
-                <div className="text-sm text-gray-500">
-                  {location.address.streetAddress && (
-                    <p>{location.address.streetAddress}</p>
-                  )}
-                  <p>{location.address.suburb}, {location.address.state} {location.address.postcode}</p>
+      {/* Locations Grid */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {locations.map((location) => (
+              <Link
+                key={location.slug}
+                href={`/en-AU/locations/${location.slug}`}
+                className="group"
+              >
+                <div className="bg-white rounded-lg shadow-lg overflow-hidden transition-shadow group-hover:shadow-xl">
+                  <div className="relative h-48">
+                    <Image
+                      src={location.image.url}
+                      alt={location.image.alt}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <h2 className="absolute bottom-4 left-4 text-2xl font-bold text-white">
+                      {location.name}
+                    </h2>
+                  </div>
+                  <div className="p-6">
+                    <p className="text-gray-600 mb-4">{location.description}</p>
+                    <div className="flex items-center text-primary group-hover:text-primary/80 transition-colors">
+                      <span className="font-medium">View Services</span>
+                      <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </a>
-          ))}
+              </Link>
+            ))}
+          </div>
         </div>
+      </section>
 
-        <div className="mt-12 text-center text-gray-600">
-          <p className="font-semibold mb-4">Main Office</p>
-          <p>17 Tile St, Wacol, QLD 4076</p>
-          <p className="mt-4">
-            Monday - Friday: 8am - 4pm<br />
-            Saturday - Sunday: On-call<br />
-            24/7 Emergency Service Available
-          </p>
-          <p className="mt-4">
-            Email: <a href="mailto:admin@disasterrecoveryqld.au" className="text-primary hover:underline">
-              admin@disasterrecoveryqld.au
-            </a>
-          </p>
+      {/* Contact Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-3xl font-bold mb-6">Need Emergency Service?</h2>
+            <p className="text-lg text-gray-600 mb-8">
+              Our team is available 24/7 for emergency restoration services across Southeast Queensland.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <a
+                href="tel:1300309361"
+                className="inline-flex items-center justify-center space-x-2 bg-primary text-white px-8 py-4 rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                <span className="text-lg font-semibold">Call 1300 309 361</span>
+              </a>
+              <a
+                href="/en-AU/quote"
+                className="inline-flex items-center justify-center space-x-2 bg-secondary text-white px-8 py-4 rounded-lg hover:bg-secondary/90 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                <span className="text-lg font-semibold">Get a Quote</span>
+              </a>
+            </div>
+          </div>
         </div>
-      </div>
-    </SchemaProvider>
+      </section>
+    </div>
   );
 }

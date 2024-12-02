@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { Inter, Montserrat } from 'next/font/google';
+import { Navigation } from '@/components/shared/Navigation';
 import './globals.css';
 
 const inter = Inter({
@@ -39,7 +40,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en-AU" className={`${inter.variable} ${montserrat.variable}`}>
-      <body className="min-h-screen bg-background font-sans">
+      <body className="min-h-screen bg-background font-sans antialiased">
+        <Navigation />
         {children}
       </body>
     </html>

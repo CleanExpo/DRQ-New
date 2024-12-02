@@ -1,103 +1,103 @@
-import { Location } from '../types/locations';
+import { Location, NearbyLocation } from '@/types/locations';
 
-const locations: Location[] = [
-  {
-    id: 'brisbane',
-    name: 'Brisbane',
-    slug: 'brisbane',
-    description: 'Professional restoration services in Brisbane and surrounding areas.',
-    image: '/images/locations/brisbane.jpg',
-    address: {
-      streetAddress: '123 Adelaide Street',
-      suburb: 'Brisbane City',
-      state: 'QLD',
-      postcode: '4000',
-      country: 'Australia'
+export function getNearbyLocations(location: Location): NearbyLocation[] {
+  const locations = [
+    {
+      name: 'Brisbane',
+      slug: 'brisbane',
+      distance: 0,
     },
-    coordinates: {
-      latitude: -27.4698,
-      longitude: 153.0251
+    {
+      name: 'Gold Coast',
+      slug: 'gold-coast',
+      distance: 77.3,
     },
-    services: [
-      'water-damage-restoration',
-      'flood-damage-cleanup',
-      'mould-remediation',
-      'storm-damage-repair',
-      'sewage-cleanup'
-    ],
-    nearbyLocations: [
-      {
-        name: 'Gold Coast',
-        url: '/en-AU/locations/gold-coast',
-        description: 'Serving the Gold Coast area'
-      },
-      {
-        name: 'Sunshine Coast',
-        url: '/en-AU/locations/sunshine-coast',
-        description: 'Serving the Sunshine Coast area'
-      }
-    ]
-  },
-  {
-    id: 'gold-coast',
-    name: 'Gold Coast',
-    slug: 'gold-coast',
-    description: 'Emergency restoration services for the Gold Coast region.',
-    image: '/images/locations/gold-coast.jpg',
-    address: {
-      streetAddress: '45 Cavill Avenue',
-      suburb: 'Surfers Paradise',
-      state: 'QLD',
-      postcode: '4217',
-      country: 'Australia'
-    },
-    coordinates: {
-      latitude: -28.0167,
-      longitude: 153.4000
-    },
-    services: [
-      'water-damage-restoration',
-      'flood-damage-cleanup',
-      'mould-remediation',
-      'storm-damage-repair'
-    ],
-    nearbyLocations: [
-      {
-        name: 'Brisbane',
-        url: '/en-AU/locations/brisbane',
-        description: 'Serving the Brisbane area'
-      }
-    ]
-  }
-];
+    {
+      name: 'Ipswich',
+      slug: 'ipswich',
+      distance: 40.2,
+    }
+  ];
 
-export function getLocations(): Location[] {
-  return locations;
+  // Filter out the current location and sort by distance
+  return locations
+    .filter(loc => loc.slug !== location.slug)
+    .sort((a, b) => a.distance - b.distance)
+    .slice(0, 3); // Return closest 3 locations
 }
 
 export function getLocationBySlug(slug: string): Location | undefined {
-  return locations.find(location => location.slug === slug);
-}
+  const locations = [
+    {
+      id: 'brisbane',
+      name: 'Brisbane',
+      slug: 'brisbane',
+      description: 'Professional restoration services in Brisbane and surrounding suburbs',
+      address: {
+        streetAddress: '17 Tile St',
+        suburb: 'Wacol',
+        state: 'QLD',
+        postcode: '4076'
+      },
+      coordinates: {
+        latitude: -27.4698,
+        longitude: 153.0251
+      },
+      services: [
+        'water-damage',
+        'flood-damage',
+        'mould-remediation',
+        'storm-damage',
+        'sewage-cleanup'
+      ]
+    },
+    {
+      id: 'gold-coast',
+      name: 'Gold Coast',
+      slug: 'gold-coast',
+      description: 'Expert restoration services for the Gold Coast region',
+      address: {
+        streetAddress: '123 Gold Coast Hwy',
+        suburb: 'Southport',
+        state: 'QLD',
+        postcode: '4215'
+      },
+      coordinates: {
+        latitude: -28.0167,
+        longitude: 153.4000
+      },
+      services: [
+        'water-damage',
+        'flood-damage',
+        'mould-remediation',
+        'storm-damage',
+        'sewage-cleanup'
+      ]
+    },
+    {
+      id: 'ipswich',
+      name: 'Ipswich',
+      slug: 'ipswich',
+      description: 'Comprehensive restoration services in Ipswich',
+      address: {
+        streetAddress: '789 Brisbane Rd',
+        suburb: 'Ipswich',
+        state: 'QLD',
+        postcode: '4305'
+      },
+      coordinates: {
+        latitude: -27.6167,
+        longitude: 152.7667
+      },
+      services: [
+        'water-damage',
+        'flood-damage',
+        'mould-remediation',
+        'storm-damage',
+        'sewage-cleanup'
+      ]
+    }
+  ];
 
-export function getNearbyLocations(location: Location): Location[] {
-  return location.nearbyLocations
-    ? locations.filter(loc => 
-        location.nearbyLocations?.some(nearby => 
-          nearby.url.includes(loc.slug)
-        )
-      )
-    : [];
-}
-
-export function getLocationsByService(service: string): Location[] {
-  return locations.filter(location => 
-    location.services.includes(service)
-  );
-}
-
-export function getLocationCoordinates(location: Location) {
-  return {
-    latitude: location.coordinates.latitude,
-    longitude: location.coordinates.longitude
-  };
+  return locations.find(loc => loc.slug === slug);
 }

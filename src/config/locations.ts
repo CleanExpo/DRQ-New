@@ -70,32 +70,6 @@ export const LOCATIONS: { [key: string]: Location } = {
       'Emergency Response'
     ]
   },
-  'sunshine-coast': {
-    name: 'Sunshine Coast',
-    slug: 'sunshine-coast',
-    region: 'South East Queensland',
-    state: 'QLD',
-    postcode: '4557',
-    coordinates: { lat: -26.6500, lng: 153.0666 },
-    metaDescription: 'Reliable disaster recovery services on the Sunshine Coast. 24/7 emergency response for all restoration needs.',
-    suburbs: [
-      'Maroochydore',
-      'Mooloolaba',
-      'Caloundra',
-      'Noosa Heads',
-      'Buderim',
-      'Coolum Beach',
-      'Alexandra Headland'
-    ],
-    population: 351424,
-    servicesOffered: [
-      'Water Damage Restoration',
-      'Fire Damage Recovery',
-      'Mould Remediation',
-      'Storm Damage Repair',
-      'Emergency Response'
-    ]
-  },
   'ipswich': {
     name: 'Ipswich',
     slug: 'ipswich',

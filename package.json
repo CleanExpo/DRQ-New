@@ -3,38 +3,49 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3007",
+    "dev": "next dev",
+    "prepare-build": "node scripts/prepare-build.js",
+    "prebuild": "npm run prepare-build && npm run verify-images && npm run generate-pages",
     "build": "next build",
-    "start": "next start -p 3007",
+    "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "deploy:prod": "vercel --prod"
-  },
-  "dependencies": {
-    "@radix-ui/react-slot": "^1.0.2",
-    "@tailwindcss/aspect-ratio": "^0.4.2",
-    "@tailwindcss/forms": "^0.5.7",
-    "@tailwindcss/typography": "^0.5.10",
-    "class-variance-authority": "^0.7.0",
-    "next": "^14.0.4",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20.10.4",
-    "@types/react": "^18.2.45",
-    "@types/react-dom": "^18.2.18",
-    "@typescript-eslint/eslint-plugin": "^6.14.0",
-    "@typescript-eslint/parser": "^6.14.0",
-    "autoprefixer": "^10.4.16",
-    "eslint": "^8.56.0",
-    "eslint-config-next": "14.0.4",
-    "postcss": "^8.4.32",
-    "tailwindcss": "^3.3.6",
-    "typescript": "^5.3.3",
-    "vercel": "^32.3.0"
+    "verify": "node scripts/verify-deployment.js",
+    "verify-images": "node scripts/verify-images.js",
+    "generate-pages": "node scripts/generate-pages.js",
+    "predeploy": "npm run verify && npm run type-check && npm run lint",
+    "deploy:prod": "npm run predeploy && vercel --prod"
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@googlemaps/js-api-loader": "^1.16.2",
+    "@types/google.maps": "^3.54.10",
+    "@types/node": "20.10.5",
+    "@types/react": "18.2.45",
+    "@types/react-dom": "18.2.18",
+    "autoprefixer": "10.4.16",
+    "critters": "^0.0.23",
+    "dotenv": "^16.3.1",
+    "eslint": "8.56.0",
+    "eslint-config-next": "14.0.4",
+    "mongodb": "^6.3.0",
+    "next": "14.0.4",
+    "postcss": "8.4.32",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "tailwindcss": "3.4.0",
+    "typescript": "5.3.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0"
+  },
+  "resolutions": {
+    "typescript": "5.3.3"
   }
 }

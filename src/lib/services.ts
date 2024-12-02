@@ -113,7 +113,7 @@ export function getServiceContent(slug: string): ServiceContent | undefined {
   return serviceContent[slug];
 }
 
-export function getServicesByLocation(locationSlug: string): ServiceData[] {
+export function getServicesByLocation(): ServiceData[] {
   // In a real app, this would filter based on location availability
   return services;
 }

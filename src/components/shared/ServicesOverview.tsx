@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { IconWater, IconFire, IconMold, IconStorm, IconSewage, IconCrime } from './icons';
 
 interface Service {
   title: string;
@@ -52,43 +53,76 @@ const defaultServices: Service[] = [
   }
 ];
 
+const getServiceIcon = (title: string) => {
+  switch (title.toLowerCase()) {
+    case 'water damage restoration':
+      return <IconWater className="w-12 h-12 text-primary" />;
+    case 'fire damage restoration':
+      return <IconFire className="w-12 h-12 text-primary" />;
+    case 'mould remediation':
+      return <IconMold className="w-12 h-12 text-primary" />;
+    case 'storm damage restoration':
+      return <IconStorm className="w-12 h-12 text-primary" />;
+    case 'sewage cleanup':
+      return <IconSewage className="w-12 h-12 text-primary" />;
+    case 'crime scene cleaning':
+      return <IconCrime className="w-12 h-12 text-primary" />;
+    default:
+      return null;
+  }
+};
+
 export function ServicesOverview({ 
   title = "Our Services", 
-  services = defaultServices
+  services = defaultServices 
 }: ServicesOverviewProps) {
   return (
     <section className="my-12">
-      <h2 className="text-2xl font-bold mb-6">{title}</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <h2 className="text-3xl font-bold text-center mb-8">{title}</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {services.map((service, index) => (
           <Link
             key={index}
             href={service.href}
-            className="block bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
+            className="group block bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
           >
             <div className="relative h-48">
               <Image
                 src={service.image}
                 alt={service.title}
                 fill
-                className="object-cover"
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              <div className="absolute bottom-4 left-4 right-4">
+                <div className="flex items-center gap-3">
+                  {getServiceIcon(service.title)}
+                  <h3 className="text-xl font-bold text-white">{service.title}</h3>
+                </div>
+              </div>
             </div>
             <div className="p-6">
-              <h3 className="text-xl font-bold mb-2">{service.title}</h3>
               <p className="text-gray-600">{service.description}</p>
+              <div className="mt-4 flex items-center text-primary font-semibold">
+                Learn More
+                <svg className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
             </div>
           </Link>
         ))}
       </div>
-      <div className="mt-8 text-center text-gray-600">
-        <p className="font-semibold">We serve a wide range of clients including:</p>
-        <p className="mt-2">
-          Residential Clients • Commercial Clients • Management Companies • Real Estates<br />
-          Lawyers • Architects • Strata • Insurance Carriers • Self-Insured Clients<br />
-          Sporting Facilities • Entertainment Facilities • Restaurants • Bars<br />
-          Schools • Government Properties
+      <div className="mt-12 text-center">
+        <p className="text-lg text-gray-600 mb-6">
+          Professional restoration services for residential and commercial properties
         </p>
+        <a
+          href="tel:1300309361"
+          className="inline-flex items-center justify-center px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-600 transition-colors"
+        >
+          Call Now: 1300 309 361
+        </a>
       </div>
     </section>
   );

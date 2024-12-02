@@ -1,50 +1,52 @@
 import { Metadata } from 'next';
-import { getLocations, getLocationBySlug } from '@/lib/locations';
 import { LocationPage } from '@/components/templates/LocationPage';
+import { getLocationBySlug } from '@/lib/locations';
 import { getLocationImage } from '@/lib/images';
+import { notFound } from 'next/navigation';
 
-interface LocationPageParams {
-  location: string;
+interface Props {
+  params: {
+    location: string;
+  };
 }
 
-export async function generateMetadata({ params }: { params: LocationPageParams }): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const location = getLocationBySlug(params.location);
-  if (!location) return {};
-
-  const image = getLocationImage(location);
+  
+  if (!location) {
+    return {
+      title: 'Location Not Found | Disaster Recovery QLD',
+      description: 'The requested location page could not be found.',
+    };
+  }
 
   return {
-    title: `${location.name} - Disaster Recovery Queensland`,
-    description: location.description,
-    openGraph: {
-      title: `${location.name} - Disaster Recovery Queensland`,
-      description: location.description,
-      images: [
-        {
-          url: image.url,
-          width: image.width,
-          height: image.height,
-          alt: location.name,
-        },
-      ],
-    },
+    title: `${location.name} Emergency Restoration Services | Disaster Recovery QLD`,
+    description: `Professional disaster recovery and restoration services in ${location.name}. 24/7 emergency response for water damage, flood cleanup, and storm damage repair.`,
   };
 }
 
-export default function LocationPageRoute({ params }: { params: LocationPageParams }) {
-  const location = getLocationBySlug(params.location);
-  if (!location) return null;
+export async function generateStaticParams() {
+  return [
+    { location: 'brisbane' },
+    { location: 'gold-coast' },
+    { location: 'ipswich' }
+  ];
+}
 
-  const coordinates = {
-    latitude: location.coordinates.latitude,
-    longitude: location.coordinates.longitude
-  };
+export default function Page({ params }: Props) {
+  const location = getLocationBySlug(params.location);
+  
+  if (!location) {
+    notFound();
+  }
+
+  const image = getLocationImage(location);
 
   return (
     <LocationPage
       location={location}
-      coordinates={coordinates}
-      image={getLocationImage(location)}
+      image={image}
     />
   );
 }

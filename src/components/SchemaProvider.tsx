@@ -1,8 +1,13 @@
-import { ReactNode } from 'react';
+import { PropsWithChildren } from 'react';
 
-interface SchemaProviderProps {
-  schema: Record<string, any>;
-  children: ReactNode;
+interface Schema {
+  '@context': string;
+  '@type': string;
+  [key: string]: unknown;
+}
+
+interface SchemaProviderProps extends PropsWithChildren {
+  schema: Schema;
 }
 
 export function SchemaProvider({ schema, children }: SchemaProviderProps) {
@@ -10,9 +15,7 @@ export function SchemaProvider({ schema, children }: SchemaProviderProps) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(schema)
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
       {children}
     </>

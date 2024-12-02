@@ -11,10 +11,8 @@ interface Location {
 const LOCATIONS: Location[] = [
   { name: 'Brisbane', slug: 'brisbane', state: 'QLD', postcode: '4000' },
   { name: 'Gold Coast', slug: 'gold-coast', state: 'QLD', postcode: '4217' },
-  { name: 'Sunshine Coast', slug: 'sunshine-coast', state: 'QLD', postcode: '4557' },
   { name: 'Ipswich', slug: 'ipswich', state: 'QLD', postcode: '4305' },
-  { name: 'Logan', slug: 'logan', state: 'QLD', postcode: '4114' },
-  // Add more locations as needed
+  { name: 'Logan', slug: 'logan', state: 'QLD', postcode: '4114' }
 ];
 
 const SITE_URL = 'https://disasterrecoveryqld.au';
