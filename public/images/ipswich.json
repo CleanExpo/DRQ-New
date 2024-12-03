@@ -1,11 +1,12 @@
 {
-  "id": 27959960,
-  "width": 7000,
-  "height": 3938,
-  "photographer": "Mr Alex Photography",
-  "photographerUrl": "https://www.pexels.com/@mralexphotography",
-  "originalUrl": "https://www.pexels.com/photo/a-statue-is-in-front-of-a-building-with-flags-27959960/",
-  "alt": "Ipswich Queensland historic buildings",
+  "id": "Brisbane_Street_2020",
+  "width": 3858,
+  "height": 2893,
+  "photographer": "Kgbo",
+  "photographerUrl": "https://commons.wikimedia.org/wiki/User:Kgbo",
+  "originalUrl": "https://commons.wikimedia.org/wiki/File:Brisbane_Street,_Ipswich,_Queensland,_2020,_03.jpg",
+  "alt": "Brisbane Street, Ipswich, Queensland showing historic buildings and tree-lined street",
+  "license": "Creative Commons Attribution-Share Alike 4.0",
   "sizes": [
     {
       "width": 1200,
