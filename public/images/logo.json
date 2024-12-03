@@ -1,0 +1,26 @@
+{
+  "id": "drq_logo_2024",
+  "width": 500,
+  "height": 500,
+  "photographer": "Disaster Recovery Queensland",
+  "photographerUrl": "https://disasterrecoveryqld.au",
+  "originalUrl": "https://disasterrecoveryqld.au",
+  "alt": "Disaster Recovery QLD logo featuring lightning and building in a gear design, established 2011",
+  "sizes": [
+    {
+      "width": 500,
+      "height": 500,
+      "png": "/images/logo.png"
+    },
+    {
+      "width": 1000,
+      "height": 1000,
+      "png": "/images/logo@2x.png"
+    },
+    {
+      "width": 1500,
+      "height": 1500,
+      "png": "/images/logo@3x.png"
+    }
+  ]
+}
