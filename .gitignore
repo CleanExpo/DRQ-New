@@ -29,6 +29,8 @@ yarn-error.log*
 .env.production
 .env.staging
 .env-backups
+env-backups/
+encryption-key.txt
 
 # vercel
 .vercel
@@ -62,4 +64,18 @@ Thumbs.db
 # Local development files
 /public/images/temp/
 /public/uploads/
-env-backups/
+
+# Security
+*.key
+*.pem
+*.crt
+*.cert
+*.p12
+*.pfx
+*.keystore
+*.jks
+*.env.backup
+*.env.*.backup
+/backups/
+/env-backups/
+**/encryption-key.txt
