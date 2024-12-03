@@ -1,0 +1,23 @@
+{
+  "id": "brisbane-cbd",
+  "width": 1200,
+  "height": 800,
+  "photographer": "Disaster Recovery Queensland",
+  "photographerUrl": "https://disasterrecoveryqld.au",
+  "originalUrl": "https://disasterrecoveryqld.au",
+  "alt": "Brisbane CBD - aerial view of the region",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/locations/brisbane-cbd.webp",
+      "avif": "/images/locations/brisbane-cbd.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/locations/brisbane-cbd-sm.webp",
+      "avif": "/images/locations/brisbane-cbd-sm.avif"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "brisbane-east",
+  "width": 1200,
+  "height": 800,
+  "photographer": "Disaster Recovery Queensland",
+  "photographerUrl": "https://disasterrecoveryqld.au",
+  "originalUrl": "https://disasterrecoveryqld.au",
+  "alt": "East Brisbane - aerial view of the region",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/locations/brisbane-east.webp",
+      "avif": "/images/locations/brisbane-east.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/locations/brisbane-east-sm.webp",
+      "avif": "/images/locations/brisbane-east-sm.avif"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "brisbane-north",
+  "width": 1200,
+  "height": 800,
+  "photographer": "Disaster Recovery Queensland",
+  "photographerUrl": "https://disasterrecoveryqld.au",
+  "originalUrl": "https://disasterrecoveryqld.au",
+  "alt": "North Brisbane - aerial view of the region",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/locations/brisbane-north.webp",
+      "avif": "/images/locations/brisbane-north.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/locations/brisbane-north-sm.webp",
+      "avif": "/images/locations/brisbane-north-sm.avif"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "toowoomba",
+  "width": 1200,
+  "height": 800,
+  "photographer": "Disaster Recovery Queensland",
+  "photographerUrl": "https://disasterrecoveryqld.au",
+  "originalUrl": "https://disasterrecoveryqld.au",
+  "alt": "Toowoomba - aerial view of the region",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/locations/toowoomba.webp",
+      "avif": "/images/locations/toowoomba.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/locations/toowoomba-sm.webp",
+      "avif": "/images/locations/toowoomba-sm.avif"
+    }
+  ]
+}

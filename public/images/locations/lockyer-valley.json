@@ -1,0 +1,23 @@
+{
+  "id": "lockyer-valley",
+  "width": 1200,
+  "height": 800,
+  "photographer": "Disaster Recovery Queensland",
+  "photographerUrl": "https://disasterrecoveryqld.au",
+  "originalUrl": "https://disasterrecoveryqld.au",
+  "alt": "Lockyer Valley - aerial view of the region",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/locations/lockyer-valley.webp",
+      "avif": "/images/locations/lockyer-valley.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/locations/lockyer-valley-sm.webp",
+      "avif": "/images/locations/lockyer-valley-sm.avif"
+    }
+  ]
+}

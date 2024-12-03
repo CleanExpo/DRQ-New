@@ -1,0 +1,23 @@
+{
+  "id": "logan-village",
+  "width": 1200,
+  "height": 800,
+  "photographer": "Disaster Recovery Queensland",
+  "photographerUrl": "https://disasterrecoveryqld.au",
+  "originalUrl": "https://disasterrecoveryqld.au",
+  "alt": "Logan Village - aerial view of the region",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/locations/logan-village.webp",
+      "avif": "/images/locations/logan-village.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/locations/logan-village-sm.webp",
+      "avif": "/images/locations/logan-village-sm.avif"
+    }
+  ]
+}

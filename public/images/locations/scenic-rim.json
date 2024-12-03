@@ -1,0 +1,23 @@
+{
+  "id": "scenic-rim",
+  "width": 1200,
+  "height": 800,
+  "photographer": "Disaster Recovery Queensland",
+  "photographerUrl": "https://disasterrecoveryqld.au",
+  "originalUrl": "https://disasterrecoveryqld.au",
+  "alt": "Scenic Rim - aerial view of the region",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/locations/scenic-rim.webp",
+      "avif": "/images/locations/scenic-rim.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/locations/scenic-rim-sm.webp",
+      "avif": "/images/locations/scenic-rim-sm.avif"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "brisbane-south",
+  "width": 1200,
+  "height": 800,
+  "photographer": "Disaster Recovery Queensland",
+  "photographerUrl": "https://disasterrecoveryqld.au",
+  "originalUrl": "https://disasterrecoveryqld.au",
+  "alt": "South Brisbane - aerial view of the region",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/locations/brisbane-south.webp",
+      "avif": "/images/locations/brisbane-south.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/locations/brisbane-south-sm.webp",
+      "avif": "/images/locations/brisbane-south-sm.avif"
+    }
+  ]
+}

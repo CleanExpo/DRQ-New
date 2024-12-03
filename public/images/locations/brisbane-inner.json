@@ -1,0 +1,23 @@
+{
+  "id": "brisbane-inner",
+  "width": 1200,
+  "height": 800,
+  "photographer": "Disaster Recovery Queensland",
+  "photographerUrl": "https://disasterrecoveryqld.au",
+  "originalUrl": "https://disasterrecoveryqld.au",
+  "alt": "Inner Brisbane - aerial view of the region",
+  "sizes": [
+    {
+      "width": 1200,
+      "height": 800,
+      "webp": "/images/locations/brisbane-inner.webp",
+      "avif": "/images/locations/brisbane-inner.avif"
+    },
+    {
+      "width": 600,
+      "height": 400,
+      "webp": "/images/locations/brisbane-inner-sm.webp",
+      "avif": "/images/locations/brisbane-inner-sm.avif"
+    }
+  ]
+}
